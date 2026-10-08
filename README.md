@@ -15,7 +15,7 @@ npm run dev
 저장소: https://github.com/fobesseo1/linerealestate
 
 `main` 브랜치에 push하면 GitHub Actions가 정적 사이트를 빌드해 GitHub Pages에 자동 배포합니다.
-`npm run build:pages`로 같은 정적 배포 파일을 `out` 폴더에 만들 수 있습니다.
+`npm run build:pages`로 같은 정적 배포 파일을 `.next-pages` 폴더에 만들 수 있습니다.
 GitHub Pages에서는 `/linerealestate` 경로를 적용하고, 로컬 실행은 기존 3010번 주소를 유지합니다.
 실제 상담 접수 서버는 연결하지 않았으며 공개 사이트에서도 문의 내용 미리보기만 제공합니다.
 
