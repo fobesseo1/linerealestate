@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.next-pages/
+.tmp/
+sun-demo/
+sun-demo-archive.tar.gz
+research/
+sharing/
+public/images/*-v2.png
+out/
+*.tsbuildinfo
+.env*
+!.env.example
+next-env.d.ts
