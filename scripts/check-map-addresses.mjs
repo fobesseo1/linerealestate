@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {mapAddress, matchCoordinates} from '../lib/maps/address.mjs';
+assert.equal(mapAddress('경기도 군포시 산본동1145-4번지 2층'), '경기도 군포시 산본동 1145-4');
+assert.equal(mapAddress('경기도 군포시 산본동 1130-1 비젼빌딩 제602호'), '경기도 군포시 산본동 1130-1');
+const query = '경기도 군포시 산본동 1136-2';
+const address = {roadAddress:'', jibunAddress:query+' 삼일빌딩', x:'126.9313075', y:'37.3597449'};
+assert.ok(matchCoordinates(query, [address]));
+assert.equal(matchCoordinates(query, [{...address, jibunAddress:'경기도 군포시 산본동 1136-3'}]), null);
+assert.equal(matchCoordinates(query, [{...address, x:'NaN'}]), null);
+assert.equal(matchCoordinates(query, [address, {...address, x:'126.95'}]), null);
+console.log('Address normalization, parcel validation and coordinate validation passed');

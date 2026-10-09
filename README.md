@@ -41,3 +41,8 @@ GitHub Pages에서는 `/linerealestate` 경로를 적용하고, 로컬 실행은
 - 이전 사이트는 `sun-demo` 폴더에 보존되어 있습니다.
 
 디자인 기준: `docs/design/DESIGNstyle-lineestate.md`.
+
+### 네이버 지도
+실제 사례 주소는 원문을 보존하고, `npm run maps:prepare`로 건물 번지까지만 Geocoding 조회합니다. 반환 주소가 일치한 좌표만 `lib/maps/public-config.json`에 저장됩니다. 이 파일에는 공개용 Client ID와 좌표만 포함되며 Client Secret은 `.env.local`에서 로컬 준비 스크립트만 읽습니다. GitHub Pages 빌드는 저장된 좌표를 사용하므로 CI에 Secret이 필요하지 않습니다.
+
+네이버 Maps 콘솔에서 Dynamic Map과 Geocoding을 선택하고 Web 서비스 URL에 `http://localhost:3010` 및 `https://fobesseo1.github.io`를 등록하세요. 실제 사례 지도는 건물 위치를 표시하며 층·호수는 원래 주소를 참고합니다. 가상 매물 지도는 산본 중심상가의 예시 주소이며 실제 매물 위치가 아니라고 표시합니다. 조회 실패 또는 지도 인증 실패 시 네이버 지도 검색 링크로 안내합니다.

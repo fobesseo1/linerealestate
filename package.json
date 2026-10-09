@@ -7,7 +7,8 @@
     "build": "next build",
     "build:pages": "node scripts/build-pages.mjs",
     "start": "next start --hostname 0.0.0.0 --port 3010",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "maps:prepare": "node scripts/prepare-map-positions.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.2.0",
