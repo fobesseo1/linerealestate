@@ -22,7 +22,7 @@
 node scripts/admin-content.mjs export SUN-1001
 ```
 
-`.tmp/content/SUN-1001/original.json`과 실제 원본 사진이 비공개 로컬 폴더에 저장된다. 이 폴더는 Git·공개 배포에서 제외한다. 설명 수정안은 별도 JSON에 작성하고 보정 사진은 별도 파일로 만든다. 사진의 `localFile`을 보정 파일 경로로 바꾸면 업로드된다. 원본을 덮어쓰지 않는다. 사진은 실제 공간·구조를 바꾸지 않는 밝기·색감·수평 보정만 한다. 이미지 작업은 imagegen 스킬을 읽고 수행한다. 확인되지 않은 거래 조건을 추측해 채우지 않는다.
+`.tmp/content/SUN-1001/original.json`과 등록된 WebP 사진을 작업용 비공개 로컬 폴더로 가져온다. 이 폴더는 Git·공개 배포에서 제외한다. 설명 수정안은 별도 JSON에 작성하고 보정 사진은 별도 파일로 만든다. 사진의 `localFile`을 작업 파일 경로로 바꾸면 긴 변 1200px · WebP로 변환하여 저장한다. 변환 전 사진 원본은 새로 저장하지 않는다. 사진은 실제 공간·구조를 바꾸지 않는 밝기·색감·수평 보정만 한다. 이미지 작업은 imagegen 스킬을 읽고 수행한다. 확인되지 않은 거래 조건을 추측해 채우지 않는다.
 
 ```powershell
 node scripts/admin-content.mjs revise SUN-1001 .tmp/content/SUN-1001/revised.json
@@ -46,7 +46,7 @@ Supabase Authentication → URL Configuration에 `https://fobesseo1.github.io/li
 - `lineestate_drafts`: 입력 초안과 비공개 메모. 관리자만 조회·수정.
 - `lineestate_revisions`: 원본·보정안·원본 버전·승인 상태. 관리자만 조회·수정.
 - `lineestate_published`: 승인한 공개 자료만 포함. 방문객은 active/completed 자료만 조회.
-- `lineestate-originals`: 원본·보정 사진 비공개 저장소. 관리자용 URL은 1시간 유효.
+- `lineestate-originals`: 초안·수정 이력용 1200px WebP 저장소(기존 이름 유지). 관리자용 URL은 1시간 유효.
 - `lineestate-public`: 승인 시 복사한 공개 사진.
 
-공개 사이트는 저장소에서 승인 자료를 읽으므로 등록 때마다 Git 재배포가 필요하지 않다. 기존 가상 매물과 4개 중개 사례는 기존 페이지로 유지하고 새 등록 자료는 별도 카드로 추가한다. 현재 관리자 화면에서 기존 하드코딩 자료를 수정하는 기능은 포함하지 않는다.
+공개 사이트는 저장소에서 승인 자료를 읽으므로 등록 때마다 Git 재배포가 필요하지 않다. 중개 사례는 기존 4개를 포함해 모두 lineestate 데이터 저장소에서 조회한다. 관리자에서 내용·사진 수정 후 승인하면 홈·사례 목록·상세에 반영되고 Git·Vercel 재배포는 필요 없다. 기존 #work/pyeonbaek·salon·comma·clinic 주소는 lib/content/legacy-work-routes.json의 매물번호로 연결한다. 이 파일은 주소 연결 정보만 담고 사례 내용을 담지 않는다. 사례 내용을 lib/real-cases.json 또는 프런트엔드 코드에서 수정하지 않는다. 원본 사진은 추가 보관하지 않고 관리자 업로드는 lib/content/photo.ts, 채팅·이전은 lib/content/photo-node.mjs를 통해 긴 변 정확히 1200px의 WebP만 저장한다. 기존 역사 원본 삭제는 사용자에게 범위 승인을 받은 뒤에만 수행한다.

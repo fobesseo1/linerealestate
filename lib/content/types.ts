@@ -1,5 +1,5 @@
 export type Kind = "lease" | "sale" | "work";
-export type Photo = {path:string; label:string; url?:string};
+export type Photo = {path:string; label:string; url?:string; originalPath?:string};
 export type Content = {
  kind:Kind; industry:string; title:string; address:string; building:string; floor:string; totalFloors:string;
  area:string; contractArea:string; deposit:string; rent:string; salePrice:string; premium:string; management:string;

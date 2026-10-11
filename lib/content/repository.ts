@@ -1,4 +1,5 @@
 import {contentClient, originalsBucket, publicBucket} from "./client";
+import {webpPhoto} from "./photo";
 import {cleanContent, type Content, type Draft, type Revision} from "./types";
 const db=()=>{const client=contentClient();if(!client)throw Error("자료 저장소 설정이 필요합니다.");return client;};
 export async function loadDrafts():Promise<Draft[]>{const {data,error}=await db().from("lineestate_drafts").select("*").order("updated_at",{ascending:false});if(error)throw error;return data||[];}
@@ -14,20 +15,23 @@ export async function makeRevision(draft:Draft,candidate:Content,summary:string)
 export async function photoUrl(path:string){const {data,error}=await db().storage.from(originalsBucket).createSignedUrl(path,3600);if(error)throw error;return data.signedUrl;}
 export async function uploadPhoto(file:File,draft:Draft){
  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>15*1024*1024)throw Error("JPG·PNG·WebP 사진을 장당 15MB 이하로 올려주세요.");
- const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
- const path=`${draft.id}/${crypto.randomUUID()}.${ext}`;
- const {error}=await db().storage.from(originalsBucket).upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;
- return {path,label:file.name};
+ const processed=await webpPhoto(file);
+ const processedPath=`${draft.id}/${crypto.randomUUID()}.webp`;
+ const converted=await db().storage.from(originalsBucket).upload(processedPath,processed,{contentType:"image/webp",upsert:false});if(converted.error)throw converted.error;
+ return {path:processedPath,label:file.name.replace(/\.[^.]+$/,".webp"),};
 }
 export async function approveRevision(revision:Revision){
  const published=[];
  for(const [i,photo] of revision.candidate.photos.entries()){
    if(!photo.path.startsWith(`${revision.draft_id}/`))throw Error("다른 매물의 사진은 게시할 수 없습니다.");
    const {data,error}=await db().storage.from(originalsBucket).download(photo.path);if(error)throw error;
-   const path=`${revision.draft_id}/${revision.id}/${i}-${photo.path.split('/').pop()}`;
-   const result=await db().storage.from(publicBucket).upload(path,data,{contentType:data.type,upsert:true});if(result.error)throw result.error;
+   const processed=await webpPhoto(data);
+   const path=`${revision.draft_id}/${revision.id}/${i}.webp`;
+   const result=await db().storage.from(publicBucket).upload(path,processed,{contentType:"image/webp",upsert:true});if(result.error)throw result.error;
    published.push({path,label:photo.label,url:db().storage.from(publicBucket).getPublicUrl(path).data.publicUrl});
  }
  const {error}=await db().rpc("lineestate_approve",{revision:revision.id,public_photos:published});if(error)throw Error(`게시하지 못했습니다: ${error.message}`);
+ window.dispatchEvent(new Event("lineestate-published"));
+ try{localStorage.setItem("lineestate-publication-updated",String(Date.now()));}catch{}
 }
 export async function setPublicationStatus(id:string,status:string){const {data,error}=await db().from("lineestate_published").update({status}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw Error("아직 게시되지 않은 초안입니다. 게시 후 상태를 변경할 수 있습니다.");}

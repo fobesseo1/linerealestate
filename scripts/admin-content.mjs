@@ -2,6 +2,7 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
 import {createClient} from '@supabase/supabase-js';
+import {webpPhotoBuffer} from '../lib/content/photo-node.mjs';
 import {cleanContent} from '../lib/content/types.ts';
 import {mapAddress,matchCoordinates} from '../lib/maps/address.mjs';
 process.loadEnvFile('.env.local');
@@ -44,7 +45,7 @@ if(command==='export'){
    const bytes=await readFile(photo.localFile);const ext=photo.localFile.split('.').pop().toLowerCase();
    const mime={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'}[ext];
    if(!mime||bytes.length>15*1024*1024)throw Error('Invalid photo format or size');
-   const path=`${draft.id}/${crypto.randomUUID()}.${ext}`;check(await db.storage.from('lineestate-originals').upload(path,bytes,{contentType:mime,upsert:false}));photo.path=path;
+   const processedPath=`${draft.id}/${crypto.randomUUID()}.webp`;check(await db.storage.from('lineestate-originals').upload(processedPath,await webpPhotoBuffer(bytes),{contentType:'image/webp',upsert:false}));photo.path=processedPath;
   }
   delete photo.localFile;delete photo.url;
  }
@@ -60,7 +61,7 @@ if(command==='export'){
  const photos=[];
  for(const [i,p]of revision.candidate.photos.entries()){
   verifyPhoto(p,draft.id);const blob=check(await db.storage.from('lineestate-originals').download(p.path));
-  const path=`${draft.id}/${revision.id}/${i}-${p.path.split('/').pop()}`;check(await db.storage.from('lineestate-public').upload(path,blob,{contentType:blob.type,upsert:true}));
+  const path=`${draft.id}/${revision.id}/${i}.webp`;const processed=await webpPhotoBuffer(Buffer.from(await blob.arrayBuffer()));check(await db.storage.from('lineestate-public').upload(path,processed,{contentType:'image/webp',upsert:true}));
   photos.push({path,label:p.label,url:db.storage.from('lineestate-public').getPublicUrl(path).data.publicUrl});
  }
  check(await db.rpc('lineestate_approve',{revision:revision.id,public_photos:photos}));console.log(`Approved revision published: ${draft.number}`);
