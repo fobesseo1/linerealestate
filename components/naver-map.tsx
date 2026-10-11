@@ -46,7 +46,7 @@ export function NaverMap({address, title, example=false,positionOverride}:{addre
     const map = new maps.Map(container.current, {center, zoom:17, zoomControl:true, scrollWheel:false});
     const marker = new maps.Marker({map, position:center, title});
     return () => {marker.setMap(null); map.destroy();};
-  }, [ready, error, position, title]);
+  }, [ready, error, position?.latitude, position?.longitude, title]);
 
   return <section className="property-map" aria-label={`${title} 위치`}>
     <div className="property-map-heading"><h2><MapPin size={18}/>{example ? "지도 예시" : "점포 위치"}</h2><span>{example ? "가상 매물 · 지도 예시 위치" : "실제 중개 완료 사례"}</span></div>
