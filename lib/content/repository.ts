@@ -30,4 +30,4 @@ export async function approveRevision(revision:Revision){
  }
  const {error}=await db().rpc("lineestate_approve",{revision:revision.id,public_photos:published});if(error)throw Error(`게시하지 못했습니다: ${error.message}`);
 }
-export async function setPublicationStatus(id:string,status:string){const {error}=await db().from("lineestate_published").update({status}).eq("id",id);if(error)throw error;}
+export async function setPublicationStatus(id:string,status:string){const {data,error}=await db().from("lineestate_published").update({status}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw Error("아직 게시되지 않은 초안입니다. 게시 후 상태를 변경할 수 있습니다.");}
