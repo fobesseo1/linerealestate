@@ -26,11 +26,11 @@
   },
   {
     "id": "salon",
-    "name": "여배우살롱",
+    "name": "여배우살롱 산본점",
     "category": "뷰티샵 · 시설 조건 협의",
     "title": "마음에 드는 공간에 없는 시설,<br>계약 전에 해결했습니다.",
     "summary": "면적 대비 임대료가 저렴한 점포였지만 내부 수도시설이 없었습니다. 계약 전 임대인과 설치를 협의해 시설을 갖출 수 있도록 도왔습니다.",
-    "address": "경기도 군포시 산본동 1130-1 비젼빌딩 제602호",
+    "address": "경기도 군포시 산본로323번길 4-11 비전빌딩 602호 (산본동 1130-1)",
     "area": "20평",
     "deposit": "1,000만원",
     "rent": "60만원",
@@ -47,7 +47,30 @@
       "시설 설치 가능 여부와 비용 부담",
       "공사와 입주 일정에 대한 사전 협의"
     ],
-    "deliverable": "업종별 필수 시설·설치 조건 확인표"
+    "deliverable": "업종별 필수 시설·설치 조건 확인표",
+    "photos": [
+      {
+        "label": "여배우살롱 산본점 대기 공간",
+        "src": "/images/works/salon/155_0.jpg"
+      },
+      {
+        "label": "여배우살롱 산본점 출입구",
+        "src": "/images/works/salon/154_0.jpg"
+      },
+      {
+        "label": "여배우살롱 산본점 대기 좌석",
+        "src": "/images/works/salon/153_0.jpg"
+      },
+      {
+        "label": "여배우살롱 산본점 안내 데스크",
+        "src": "/images/works/salon/159_0.jpg"
+      },
+      {
+        "label": "여배우살롱 산본점 내부 전경",
+        "src": "/images/works/salon/157_0.jpg"
+      }
+    ],
+    "mapLink": "https://naver.me/GDQiVJK0"
   },
   {
     "id": "comma",
