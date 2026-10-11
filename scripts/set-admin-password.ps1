@@ -61,7 +61,7 @@ $save.Add_Click({
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo=$start
   [void]$process.Start()
-  $process.StandardInput.Write(({password=$password.Text}|ConvertTo-Json -Compress))
+  $process.StandardInput.Write((@{password=$password.Text}|ConvertTo-Json -Compress))
   $process.StandardInput.Close()
   $password.Clear();$confirmation.Clear()
   $output=$process.StandardOutput.ReadToEnd()
