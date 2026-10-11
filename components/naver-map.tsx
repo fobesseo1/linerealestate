@@ -15,10 +15,10 @@ type MapsSDK = {
 };
 type MapWindow = Window & {naver?:{maps:MapsSDK}; navermap_authFailure?:()=>void};
 
-export function NaverMap({address, title, example=false}:{address:string; title:string; example?:boolean}) {
+export function NaverMap({address, title, example=false,positionOverride}:{address:string; title:string; example?:boolean;positionOverride?:{latitude:number;longitude:number}}) {
   // Query keys are generated from the original case addresses during preparation.
   const query = mapAddress(address);
-  const position = (config.positions as Record<string, Position | null>)[query];
+  const position = positionOverride || (config.positions as Record<string, Position | null>)[query];
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID?.trim() || config.clientId;
   const container = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
