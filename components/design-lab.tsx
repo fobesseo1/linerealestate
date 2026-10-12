@@ -6,7 +6,7 @@ import {type Publication,kindLabel} from "@/lib/content/types";
 import "./design-lab.css";
 type Theme="market"|"cinematic"|"balanced";
 const themes={market:{letter:"A",name:"활기 있는 매물형",note:"강한 붉은색 · 촘촘한 정보 · 전환 배너",opinion:"매물을 빠르게 비교하기 좋습니다. 매물이 늘어날수록 힘이 생기는 안입니다."},cinematic:{letter:"B",name:"사진 중심형",note:"큰 사진 · 짙은 남색 · 느린 사진 움직임",opinion:"첫인상이 가장 강합니다. 사진의 품질과 구도가 전체 분위기를 좌우합니다."},balanced:{letter:"C",name:"균형형",note:"따뜻한 배경 · 선명한 조건 · 절제된 움직임",opinion:"제 추천안입니다. 산본 현장의 활기와 동네 중개사의 신뢰를 함께 보여줍니다."}};
-const price=(value:string)=>value===""?"미확인":`${Number(value).toLocaleString("ko-KR")}만원`;
+const price=(value:string)=>{if(value==="")return "미확인";const n=Number(value);return n>=10000?`${Math.floor(n/10000).toLocaleString("ko-KR")}억${n%10000?` ${Number((n%10000).toFixed(2)).toLocaleString("ko-KR")}만`:""}원`:`${n.toLocaleString("ko-KR")}만원`;};
 const href=(item:Publication)=>`/#property/${item.number}`;
 function Money({item}:{item:Publication}){const c=item.content;return <div className="dl-money">{c.kind==="sale"?<><span>매매가</span><strong>{price(c.salePrice)}</strong></>:<><span>보증금</span><strong>{price(c.deposit)}</strong><i>/</i><span>월세</span><strong>{price(c.rent)}</strong></>}</div>;}
 function Photo({item,className=""}:{item:Publication;className?:string}){return item.content.photos[0]?.url?<img className={className} src={item.content.photos[0].url} alt={item.content.title}/>:<div className="dl-no-photo"><Building2/><span>사진 준비 중</span></div>;}
