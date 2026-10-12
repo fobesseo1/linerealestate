@@ -42,10 +42,22 @@ export function NaverMap({address, title, example=false,positionOverride}:{addre
   useEffect(() => {
     const maps = (window as MapWindow).naver?.maps;
     if (!ready || error || !maps || !position || !container.current) return;
-    const center = new maps.LatLng(position.latitude, position.longitude);
-    const map = new maps.Map(container.current, {center, zoom:17, zoomControl:true, scrollWheel:false});
-    const marker = new maps.Marker({map, position:center, title});
-    return () => {marker.setMap(null); map.destroy();};
+    let map:MapInstance | undefined;
+    let removeMarker:(()=>void) | undefined;
+    try {
+      const center = new maps.LatLng(position.latitude, position.longitude);
+      map = new maps.Map(container.current, {center, zoom:17, zoomControl:true, scrollWheel:false});
+      const pin = new maps.Marker({map, position:center, title});
+      removeMarker = () => pin.setMap(null);
+    } catch {
+      setError("지도를 초기화하지 못했습니다. 네이버 지도에서 위치를 확인해 주세요.");
+    }
+    return () => {
+      // Authentication failure disposes the SDK before notifying our callback.
+      // Its old instances can no longer safely call SDK methods at that point.
+      if ((window as MapWindow).naver?.maps !== maps) return;
+      try {removeMarker?.(); map?.destroy();} catch { /* Keep the property page usable if SDK cleanup fails. */ }
+    };
   }, [ready, error, position?.latitude, position?.longitude, title]);
 
   return <section className="property-map" aria-label={`${title} 위치`}>
