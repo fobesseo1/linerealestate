@@ -22,7 +22,7 @@ export async function requireAdmin(request:Request){
  if(result.error||!result.data)throw Error("UNAUTHORIZED");
  return data.user;
 }
-export type NotificationConfig={kakaoKey?:string;kakaoSecret?:string;accessToken?:string;refreshToken?:string;expiresAt?:number;kakaoConnectedBy?:string;gmailAppPassword?:string};
+export type NotificationConfig={kakaoKey?:string;kakaoSecret?:string;accessToken?:string;refreshToken?:string;expiresAt?:number;kakaoConnectedBy?:string;gmailAppPassword?:string;sheetsSyncToken?:string;sheetsId?:string};
 function encryptionKey(){const secret=process.env.SUPABASE_SECRET_KEY;if(!secret)throw Error("SERVER_NOT_CONFIGURED");return createHash("sha256").update(`linerealestate-notifications-v1:${secret}`).digest();}
 export async function loadConfig():Promise<NotificationConfig>{
  const {data,error}=await serverDB().from("linerealestate_notification_settings").select("encrypted_config").eq("id",true).maybeSingle();if(error)throw Error("SETTINGS_UNAVAILABLE");if(!data)return {};
