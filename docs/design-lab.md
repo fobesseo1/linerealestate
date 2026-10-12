@@ -6,7 +6,7 @@ Separate previews live at `/design-lab/market`, `/design-lab/cinematic`, `/desig
 
 User preference on 2026-10-12: preserve the logo's brand red `#e00b41` across every option. Do not substitute gold, ochre, or dark red as the main accent. Use the supplied white-letter logo on dark headers.
 
-B–D use 3.2-second banner changes. A explores stronger motion with 1.8-second changes, a moving property strip, button highlights, and more pronounced hover reactions. Each preview provides a motion toggle and respects reduced-motion preferences. A is a comparison option, not the selected production design.
+B uses 2.1-second banner changes, C 2.4 seconds, and D 2.2 seconds. B adds photo wipes and fast card reactions; C adds camera sweeps and text reveals; D adds photo reveals and price emphasis. B–D also use scroll-triggered section/card appearances, button shine, and moving action arrows. A explores stronger motion with 1.8-second changes, a moving property strip, button highlights, and more pronounced hover reactions. Each preview provides a motion toggle and respects reduced-motion preferences. A is a comparison option, not the selected production design.
 
 All previews use full-width section backgrounds with centrally aligned content capped by consistent gutters. Avoid a fixed-width outer page that abruptly cuts off section backgrounds on wide monitors. Keep A's featured card straight; do not rotate cards to create energy.
 

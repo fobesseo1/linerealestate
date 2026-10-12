@@ -7,3 +7,41 @@
 @media(max-width:700px){.dl-compare nav{display:grid;grid-template-columns:1fr 1fr}.dl-compare nav a{font-size:11px}.dl-dynamic .dl-hero{grid-template-columns:1fr;padding-top:35px;gap:35px}.dl-dynamic .dl-hero h1{font-size:46px}.dl-dynamic .dl-feature{margin-right:8px}.dl-dynamic .dl-feature-photo{height:240px}.dl-dynamic .dl-feature-info h2{font-size:19px;min-height:0}.dl-dynamic .dl-money strong{font-size:18px}.dl-dynamic .dl-market-strip{gap:8px}.dl-dynamic .dl-card h3{font-size:15px}.dl-dynamic .dl-card .dl-money strong{font-size:16px}.dl-ticker-copy>span{font-size:12px}.dl-ticker{padding:13px 0}.dl-dynamic .dl-service{margin-right:calc(5% + 9px)}}
 .dl{--gutter:max(5vw,calc((100vw - 1440px)/2))}.dl-page{max-width:none;width:100%;margin:0}.dl .dl-header,.dl .dl-news,.dl .dl-hero,.dl .dl-properties,.dl .dl-works,.dl .dl-footer{padding-left:var(--gutter);padding-right:var(--gutter)}.dl .dl-service{margin-left:var(--gutter);margin-right:var(--gutter)}.dl-cinematic .dl-feature-info{right:var(--gutter);width:min(42%,600px)}.dl-dynamic .dl-feature{transform:none}.dl-motion.dl-dynamic .dl-card:hover{transform:translateY(-9px)}
 @media(max-width:700px){.dl-cinematic .dl-feature-info{left:var(--gutter);right:var(--gutter);width:auto}.dl-dynamic .dl-service{margin-right:calc(var(--gutter) + 9px)}}
+
+/* B–D: quick, distinct motion; every effect follows the shared motion toggle. */
+.dl-motion:not(.dl-dynamic) .dl-hero-intro h1{animation:dl-quick-rise .38s ease-out both}
+.dl-motion:not(.dl-dynamic) .dl-hero-intro>p{animation:dl-quick-rise .38s .09s ease-out both}
+.dl-motion:not(.dl-dynamic) .dl-proof>span{animation:dl-quick-rise .3s .15s ease-out both}
+.dl-motion:not(.dl-dynamic) .dl-proof>span:nth-child(2){animation-delay:.21s}
+.dl-motion:not(.dl-dynamic) .dl-proof>span:nth-child(3){animation-delay:.27s}
+.dl-motion:not(.dl-dynamic) .dl-main-action{position:relative;overflow:hidden}
+.dl-motion:not(.dl-dynamic) .dl-main-action:after{content:"";position:absolute;inset:-80% -40%;background:linear-gradient(100deg,transparent 42%,#ffffff55 50%,transparent 58%);transform:translateX(-80%);animation:dl-light 2.6s ease-in-out infinite;pointer-events:none}
+.dl-motion:not(.dl-dynamic) .dl-main-action>svg{animation:dl-arrow-run 1.7s ease-in-out infinite}
+.dl-motion:not(.dl-dynamic) .dl-feature-info{animation:dl-quick-rise .28s ease-out both}
+.dl-motion:not(.dl-dynamic) .dl-feature-info .dl-money strong{animation:dl-price-hit .3s .06s ease-out both}
+.dl-motion.dl-market .dl-feature-photo{animation:dl-swipe .27s ease-out both}
+.dl-motion.dl-market .dl-feature-photo img{animation:dl-punch 2.1s ease-out both}
+.dl-motion.dl-market .dl-market-strip>a{transition:transform .16s,box-shadow .16s}
+.dl-motion.dl-market .dl-market-strip>a:hover{transform:translateY(-5px);box-shadow:0 5px 0 var(--accent)}
+.dl-motion.dl-cinematic .dl-feature-photo img{animation:dl-camera-sweep 2.4s ease-out both}
+.dl-motion.dl-cinematic .dl-feature-info{animation:dl-hit .3s ease-out both}
+.dl-motion.dl-cinematic .dl-hero-intro h1 em{display:inline-block;animation:dl-text-reveal .4s ease-out both}
+.dl-motion.dl-balanced .dl-feature-photo{animation:dl-text-reveal .3s ease-out both}
+.dl-motion.dl-balanced .dl-feature-photo img{animation:dl-punch 2.2s ease-out both}
+.dl-motion.dl-balanced .dl-feature-tag{animation:dl-quick-rise .25s .08s ease-out both}
+.dl-motion:not(.dl-dynamic) [data-motion-ready]{transition:opacity .32s ease-out,translate .32s ease-out;transition-delay:0s}
+.dl-motion:not(.dl-dynamic) [data-motion-ready][data-in-view="false"]{opacity:0;translate:0 22px;animation:none}
+.dl-motion:not(.dl-dynamic) [data-motion-ready][data-in-view="true"]{opacity:1;translate:0 0}
+.dl-motion:not(.dl-dynamic) .dl-card{animation:none;transition:opacity .32s,translate .32s,transform .18s,box-shadow .18s}
+.dl-motion:not(.dl-dynamic) .dl-card-photo img,.dl-motion:not(.dl-dynamic) .dl-work img{transition:transform .22s ease-out}
+.dl-motion:not(.dl-dynamic) .dl-card:hover img,.dl-motion:not(.dl-dynamic) .dl-work:hover img{transform:scale(1.11)}
+.dl-motion:not(.dl-dynamic) .dl-card-link>svg,.dl-motion:not(.dl-dynamic) .dl-work h3>svg{transition:translate .16s}
+.dl-motion:not(.dl-dynamic) .dl-card:hover .dl-card-link>svg,.dl-motion:not(.dl-dynamic) .dl-work:hover h3>svg{translate:4px -4px}
+.dl-motion:not(.dl-dynamic) .dl-service>a{transition:transform .18s}
+.dl-motion:not(.dl-dynamic) .dl-service>a:hover{transform:translateY(-4px)}
+@keyframes dl-quick-rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dl-price-hit{from{opacity:.3;transform:translateY(8px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes dl-camera-sweep{from{transform:scale(1.13) translateX(-2%)}to{transform:scale(1.03) translateX(1%)}}
+@keyframes dl-text-reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes dl-arrow-run{0%,65%,100%{transform:translate(0,0)}80%{transform:translate(5px,-5px)}}
+@media(prefers-reduced-motion:reduce){.dl [data-motion-ready]{opacity:1!important;translate:none!important}}
