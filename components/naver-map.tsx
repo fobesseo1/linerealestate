@@ -15,7 +15,7 @@ type MapsSDK = {
 };
 type MapWindow = Window & {naver?:{maps:MapsSDK}; navermap_authFailure?:()=>void};
 
-export function NaverMap({address, title, example=false,positionOverride}:{address:string; title:string; example?:boolean;positionOverride?:{latitude:number;longitude:number}}) {
+export function NaverMap({address, title, example=false,caption="건물 위치",positionOverride}:{address:string; title:string; example?:boolean;caption?:string;positionOverride?:{latitude:number;longitude:number}}) {
   // Query keys are generated from the original case addresses during preparation.
   const query = mapAddress(address);
   const position = positionOverride || (config.positions as Record<string, Position | null>)[query];
@@ -61,7 +61,7 @@ export function NaverMap({address, title, example=false,positionOverride}:{addre
   }, [ready, error, position?.latitude, position?.longitude, title]);
 
   return <section className="property-map" aria-label={`${title} 위치`}>
-    <div className="property-map-heading"><h2><MapPin size={18}/>{example ? "지도 예시" : "점포 위치"}</h2><span>{example ? "가상 매물 · 지도 예시 위치" : "실제 중개 완료 사례"}</span></div>
+    <div className="property-map-heading"><h2><MapPin size={18}/>{example ? "지도 예시" : "점포 위치"}</h2><span>{example ? "가상 매물 · 지도 예시 위치" : caption}</span></div>
     <p className="property-map-address">{example ? `지도 확인용 주소: ${address} · 이 가상 매물의 실제 주소가 아닙니다.` : address}</p>
     <div className="property-map-frame">
       <div ref={container} className="property-map-canvas" aria-label={`${title} 네이버 지도`}/>
