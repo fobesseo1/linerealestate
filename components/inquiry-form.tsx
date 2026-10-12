@@ -12,12 +12,15 @@ export function InquiryForm({ context, compact = false, onPreview }: {
   const id = useId();
   const phoneRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
+  const [busy,setBusy]=useState(false),[submitted,setSubmitted]=useState(false);
+  const requestId=useRef("");
   const isListing = context.kind === "listing";
   const isLandlord = context.kind === "landlord";
   const buttonText = isListing ? "이 매물 상담 요청" : isLandlord ? "내 점포 임대 상담 요청" : context.kind === "work" ? "비슷한 고민 상담 요청" : "내 조건에 맞는 점포 요청";
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if(busy)return;
     const data = new FormData(event.currentTarget);
     const phone = String(data.get("phone") || "").trim();
     const normalized = phone.replace(/[\s()-]/g, "");
@@ -27,21 +30,17 @@ export function InquiryForm({ context, compact = false, onPreview }: {
       return;
     }
     setError("");
-    const lines = [
-      "안녕하세요, 선 공인중개사 김영선 공인중개사님.",
-      `상담 분야: ${String(data.get("goal") || context.goal || "상가 임대차 후보 비교")}`,
-      ...(context.title ? [`${isListing ? "문의 매물" : "참고 사례"}: ${context.title}`] : []),
-      ...(context.reference ? [`매물번호: ${context.reference}`] : []),
-      `연락받을 전화번호: ${phone}`,
-      `희망 업종·상황: ${String(data.get("industry") || "상담 시 함께 정리")}`,
-      `요구 사항: ${String(data.get("requirements") || "상담 시 함께 정리")}`,
-      `연락 가능한 시간: ${String(data.get("time") || "시간 무관")}`,
-      "상담 연락을 위한 정보 제공 동의: 확인",
-    ];
-    onPreview(lines.join("\n"));
+    if(!requestId.current)requestId.current=crypto.randomUUID();
+    setBusy(true);
+    try{
+      const response=await fetch("/api/inquiries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({requestId:requestId.current,kind:context.kind,title:context.title||"",reference:context.reference||"",goal:String(data.get("goal")||context.goal||"상가 임대차 후보 비교"),phone,industry:String(data.get("industry")||""),message:String(data.get("requirements")||""),time:String(data.get("time")||"시간 무관"),consent:data.get("consent")==="on",website:String(data.get("website")||"")}),signal:AbortSignal.timeout(30000)});
+      const result=await response.json();if(!response.ok)throw Error(result.error||"접수하지 못했습니다.");setSubmitted(true);
+    }catch(reason){setError(reason instanceof Error&&reason.name!=="TimeoutError"?reason.message:"접수 결과를 확인하지 못했습니다. 다시 눌러 확인하거나 전화해 주세요.");}
+    finally{setBusy(false);}
   }
-
+  if(submitted)return <div className="inquiry-success" role="status"><strong>상담 문의가 접수됐습니다.</strong><p>김영선 공인중개사가 확인 후 연락드리겠습니다.</p>{context.reference&&<p>문의 자료: {context.reference}</p>}</div>;
   return <form className={`inquiry-form ${compact ? "compact" : ""}`} onSubmit={submit}>
+    <label style={{position:"absolute",left:"-10000px"}} aria-hidden="true">웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label>
     {!compact && !isListing && <label className="inquiry-field">어떤 도움이 필요하세요?
       <select name="goal" defaultValue={context.goal || "상가 임대차 후보 비교"}>
         <option>상가 임대차 후보 비교</option><option>내 점포 임대 의뢰</option><option>상가 매수 검토</option><option>상가 매도 자료 준비</option><option>양도양수 조건 검토</option>
@@ -61,8 +60,8 @@ export function InquiryForm({ context, compact = false, onPreview }: {
       <select name="time" aria-label="연락 가능한 시간" defaultValue="시간 무관"><option>시간 무관</option><option>오전 (9시–12시)</option><option>오후 (12시–18시)</option><option>요구 사항에 적은 시간</option></select>
     </details>
     <label className="inquiry-consent"><input type="checkbox" name="consent" required/><span>상담 연락을 위한 전화번호·문의 내용 제공에 동의합니다. <small>필수</small></span></label>
-    <div className="inquiry-actions"><Button type="submit" className="w-full">{buttonText}<ArrowRight size={15}/></Button></div>
+    <div className="inquiry-actions"><Button type="submit" disabled={busy} className="w-full">{busy?"접수 중…":buttonText}<ArrowRight size={15}/></Button></div>
     <p className="inquiry-response"><Phone size={12}/>김영선 공인중개사가 확인 후 최대한 빨리 연락드립니다.</p>
-    <p className="inquiry-demo-note">현재는 시안입니다. 요청 내용 미리보기만 제공하며 실제로 접수·저장되지 않습니다.</p>
+    <p className="inquiry-demo-note">연락처와 문의 내용은 상담을 위해 비공개로 저장되며 담당 관리자에게 알림으로 전달됩니다. 상담 목적으로만 이용합니다.</p>
   </form>;
 }
