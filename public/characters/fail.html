@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실패 아이콘</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="360" height="360"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  FAIL ICON — 1:1, 5.0s @ 60fps, transparent, seamless loop. The same character as index.html / success.html.
+//  Neutral -> the ring fills, almost there... and unwinds -> "oh!" (wide eyes, an o mouth) -> it sinks:
+//  droopy lids, a frown, the crown slides off to one side, a single tear -> a sigh (it deflates, a puff)
+//  -> it shakes it off and comes back to neutral.
+//  ?t=2.4 freezes a frame
+// =====================================================================
+const W = 1080, H = 1080, FPS = 60, DURATION = 5.0, NFRAMES = Math.round(DURATION * FPS);
+const QS = new URLSearchParams(location.search);
+const COL = { red: '#E00B41', redD: '#B80835', coral: '#FF7A68', coralL: '#FFA08E', eye: '#1D1F3A', ring: '#F6C9CE', tear: '#9FD3F2', puff: '#F6C9CE' };
+const MARK = new Path2D('M0 141H14V43H69V89H73V0H132V81L148 89V149H140V95L132 91V149H100V69L124 78V8H81V98H69V153H42V89H61V51H22V153H0V141ZM50 98V145H61V98H50ZM108 81V141H124V88L108 81Z');   // square-logo-1.svg, 148x153
+const CX = 540, CY = 610, R = 265;
+
+const TAU = Math.PI * 2, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, u) => a + (b - a) * u;
+function stepResp(tau, f = 2.2, z = 0.55) {
+  if (tau <= 0) return 0;
+  const w = TAU * f, wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * tau) * (Math.cos(wd * tau) + z / Math.sqrt(1 - z * z) * Math.sin(wd * tau));
+}
+function track(keys, t, f, z) { let v = keys[0][1]; for (let i = 1; i < keys.length; i++) v += (keys[i][1] - keys[i - 1][1]) * stepResp(t - keys[i][0], f, z); return v; }
+const easeIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const easeO = (u) => 1 - Math.pow(1 - u, 3);
+const win = (t, a, b) => clamp((t - a) / (b - a));
+
+// ---- the performance (seconds)
+const SINK = [[0, 0], [0.95, -14], [1.15, 4], [1.6, 34], [3.6, 34], [3.8, -10], [4.2, 0]];
+const SQUASH = [[0, 0], [0.95, -0.03], [1.6, 0.02], [2.55, 0.02], [2.75, 0.05], [3.15, 0.02], [3.7, 0]];
+const TILT = [[0, 0], [1.6, -0.06], [3.6, -0.06], [3.75, 0.07], [3.9, -0.06], [4.05, 0.035], [4.3, 0]];
+const SLIP = [[0, 0], [1.5, 1], [3.62, 1], [3.8, 0]];   // the crown sliding off to the left
+const LOOKX = [[0, 0], [0.3, 0.1], [1.5, -0.25], [3.6, -0.25], [3.85, 0]];
+const LOOKY = [[0, 0], [0.3, -0.45], [1.0, -0.5], [1.5, 0.6], [3.6, 0.6], [3.85, 0]];   // up at the ring, then down
+const LID = [[0, 0], [1.45, 0.42], [2.7, 0.55], [3.1, 0.42], [3.6, 0.42], [3.82, 0]];
+const BLINKS = [4.45];
+const OH = [0.98, 1.5];                 // the surprise: eyes pop, an "o" mouth
+const FROWN = [[0, 0], [1.45, 1], [2.6, 1.25], [3.1, 1], [3.62, 0]];
+const RING_TRY = [0.15, 0.98, 0.86], RING_DROP = [1.05, 1.65];
+const TEAR = { form: 1.9, fall: 2.35, end: 3.45 };
+const SIGH = [2.6, 3.4];
+const CUES = { oh: OH[0], sink: 1.15, tear: TEAR.form, sigh: SIGH[0], shake: [3.75, 3.9, 4.05], blinks: BLINKS };
+
+function state(t) {
+  const blink = BLINKS.reduce((m, b) => { const u = (t - b) / 0.17; return u >= 0 && u <= 1 ? Math.max(m, Math.sin(u * Math.PI)) : m; }, 0);
+  const oh = t >= OH[0] && t < OH[1] ? Math.sin(win(t, OH[0], OH[1]) * Math.PI) : 0;
+  const ring = t < RING_TRY[1] ? RING_TRY[2] * easeIO(win(t, RING_TRY[0], RING_TRY[1])) : RING_TRY[2] * (1 - easeIO(win(t, RING_DROP[0], RING_DROP[1])));
+  return {
+    y: track(SINK, t, 2.0, 0.55), sq: track(SQUASH, t, 2.2, 0.6), tilt: track(TILT, t, 2.4, 0.4),
+    slip: track(SLIP, t, 1.6, 0.35), lx: track(LOOKX, t, 2.2, 0.6), ly: track(LOOKY, t, 2.2, 0.6),
+    lid: Math.max(clamp(track(LID, t, 1.6, 0.8), 0, 0.85) * (1 - oh), blink), eyeS: 1 + 0.22 * oh,
+    oh, frown: clamp(track(FROWN, t, 2.0, 0.6), 0, 1.4), gloom: clamp(track(FROWN, t, 1.2, 0.9), 0, 1),
+    ring, wobble: t > RING_TRY[1] && t < RING_DROP[1] ? Math.sin((t - RING_TRY[1]) * 60) * Math.exp(-(t - RING_TRY[1]) * 8) : 0,
+    breath: 1 + 0.012 * Math.sin(TAU * t / 2.5),
+  };
+}
+
+// ---- drawing (head, eye, crown and ring as in the thinking icon)
+let ctx;
+function head(gloom) {
+  const g = ctx.createRadialGradient(CX - R * 0.45, CY - R * 0.5, R * 0.1, CX, CY, R * 1.15);
+  g.addColorStop(0, COL.coralL); g.addColorStop(0.42, COL.coral); g.addColorStop(0.85, COL.red); g.addColorStop(1, COL.redD);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.clip();
+  ctx.filter = 'blur(38px)';
+  ctx.fillStyle = 'rgba(255,140,120,0.55)'; ctx.beginPath(); ctx.ellipse(CX + R * 0.55, CY + R * 0.35, R * 0.35, R * 0.28, 0.5, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(200,6,52,0.45)'; ctx.beginPath(); ctx.ellipse(CX - R * 0.2, CY + R * 0.75, R * 0.6, R * 0.3, 0, 0, TAU); ctx.fill();
+  if (gloom > 0.01) {   // a little shadow over the brow when it's down
+    ctx.fillStyle = `rgba(90,0,40,${0.28 * gloom})`; ctx.beginPath(); ctx.ellipse(CX, CY - R * 0.95, R * 1.1, R * 0.55, 0, 0, TAU); ctx.fill();
+  }
+  ctx.filter = 'none';
+  ctx.restore();
+}
+function eye(x, y, lid, side, s = 1) {
+  const w = 21 * s, h = 36 * s;
+  ctx.save(); ctx.translate(x, y);
+  ctx.save(); ctx.rotate(side * 0.3 * Math.min(1, lid * 3)); ctx.beginPath(); ctx.rect(-w - 30, -h + 2 * h * lid - 1, 2 * w + 60, 2 * h + 40); ctx.restore(); ctx.clip();   // droopy: lower at the outer corner
+  ctx.fillStyle = COL.eye; ctx.beginPath(); ctx.roundRect(-w, -h, 2 * w, 2 * h, w); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(-w * 0.25, -h * 0.45, 6 * s, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function mouth(S) {
+  const x = CX + S.lx * 20, y = CY + 70;
+  if (S.oh > 0.05) { ctx.fillStyle = COL.eye; ctx.beginPath(); ctx.ellipse(x, y + 4, 16 * S.oh + 4, 22 * S.oh + 4, 0, 0, TAU); ctx.fill(); return; }
+  const f = S.frown; if (f < 0.04) return;
+  const w = 26 + 22 * f, d = 18 * f;   // a small downturned arc
+  ctx.strokeStyle = COL.eye; ctx.lineWidth = 12; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - w, y + d * 0.6); ctx.quadraticCurveTo(x, y - d, x + w, y + d * 0.6); ctx.stroke();
+}
+function tear(t, ex, ey) {
+  if (t < TEAR.form || t > TEAR.end) return;
+  const grow = easeO(win(t, TEAR.form, TEAR.fall)), fall = easeIO(win(t, TEAR.fall, TEAR.end - 0.15)), fade = 1 - win(t, TEAR.end - 0.25, TEAR.end);
+  const x = ex - 24 - fall * 14, y = ey + 34 + fall * 150, s = 15 * grow;
+  if (s < 0.5) return;
+  ctx.globalAlpha = fade; ctx.fillStyle = COL.tear;
+  ctx.beginPath(); ctx.moveTo(x, y - s * 1.9); ctx.bezierCurveTo(x + s * 0.4, y - s, x + s, y - s * 0.2, x + s, y + s * 0.3); ctx.arc(x, y + s * 0.3, s, 0, Math.PI); ctx.bezierCurveTo(x - s, y - s * 0.2, x - s * 0.4, y - s, x, y - s * 1.9); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(x - s * 0.35, y + s * 0.05, s * 0.25, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+}
+function puff(t, mx, my) {   // the sigh: three soft puffs drifting out and fading
+  const u = win(t, SIGH[0], SIGH[1]); if (u <= 0 || u >= 1) return;
+  for (let i = 0; i < 3; i++) {
+    const v = clamp(u * 1.3 - i * 0.12); if (v <= 0) continue;
+    const x = mx + 130 + v * 170 + i * 26, y = my + 10 - v * 40 + i * 14, r = (16 + i * 7) * easeO(clamp(v * 3));
+    ctx.globalAlpha = 0.85 * (1 - v); ctx.fillStyle = COL.puff; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function crown(rot, dx, dy, knock = 0) {
+  const s = 1.45, bw = 148 * s, bh = 153 * s;
+  ctx.save(); ctx.translate(CX + 18 + dx, CY - R + 34 + dy); ctx.rotate(rot); ctx.translate(-bw / 2, -bh);
+  ctx.scale(s, s);
+  if (knock) { const k = knock / s; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.roundRect(-k, -k, 148 + 2 * k, 153 + 2 * k, k); ctx.fill(); ctx.restore(); return; }
+  ctx.shadowColor = 'rgba(120,0,30,0.25)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = COL.red; ctx.fill(MARK, 'evenodd');
+  ctx.restore();
+}
+function ring(p, wob) {
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = COL.ring; ctx.lineWidth = 30; ctx.beginPath(); ctx.arc(CX, CY, R + 92, 0, TAU); ctx.stroke();
+  if (p > 0.002) {
+    const g = ctx.createConicGradient(-Math.PI / 2, CX, CY); g.addColorStop(0, COL.coral); g.addColorStop(0.8, COL.red); g.addColorStop(1, COL.red);
+    ctx.strokeStyle = g; ctx.beginPath(); ctx.arc(CX, CY, R + 92 + wob * 6, -Math.PI / 2, -Math.PI / 2 + p * TAU); ctx.stroke();
+  }
+}
+function renderFrame(t, canvas) {
+  const cv = canvas || document.getElementById('c');
+  ctx = cv.getContext('2d');
+  t = ((t % DURATION) + DURATION) % DURATION;
+  const S = state(t);
+  ctx.setTransform(1/3, 0, 0, 1/3, 0, 0); ctx.clearRect(0, 0, W, H);
+  ring(S.ring, S.wobble);
+  ctx.save();
+  ctx.translate(0, S.y);
+  ctx.translate(CX, CY + R); ctx.rotate(S.tilt); ctx.scale(S.breath * (1 + S.sq * 0.6), (2 - S.breath) * (1 - S.sq)); ctx.translate(-CX, -CY - R);   // pivot at the chin
+  const cr = -0.38 * S.slip - S.tilt * 0.4, cdx = -70 * S.slip, cdy = 22 * S.slip;
+  ctx.save(); ctx.globalCompositeOperation = 'destination-out'; crown(cr, cdx, cdy, 22); ctx.restore(); crown(cr, cdx, cdy);
+  head(S.gloom);
+  const ex = S.lx * 42, ey = S.ly * 34;
+  eye(CX - 72 + ex, CY - 40 + ey, S.lid, -1, S.eyeS); eye(CX + 72 + ex, CY - 40 + ey, S.lid, 1, S.eyeS);
+  mouth(S);
+  // Keep the search-empty expression gentle; omit the tear.
+  puff(t, CX + S.lx * 20, CY + 70);
+  ctx.restore();
+}
+window.renderFrame = renderFrame;
+window.setVariant = () => {};
+window.TIMELINE = { width: W, height: H, fps: FPS, duration: DURATION, frames: NFRAMES, cues: CUES };
+const cv=document.getElementById('c');
+const mq=matchMedia('(prefers-reduced-motion: reduce)');
+let raf=0,started=0,visible=false,enabled=false,elapsed=0,last=0,loop=false;
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;}
+function frame(now){raf=0;if(!visible||!enabled||document.hidden||mq.matches)return;if(!started)started=now-elapsed*1000;if(now-last>=1000/30){elapsed=(now-started)/1000;renderFrame(loop?elapsed*1.15:Math.min(elapsed*1.25,DURATION-.01),cv);last=now;}if(loop||elapsed*1.25<DURATION-.01)raf=requestAnimationFrame(frame);}
+function resume(){stop();if(visible&&enabled&&!document.hidden&&!mq.matches)raf=requestAnimationFrame(frame);else renderFrame(1.8,cv);}
+window.addEventListener('message',event=>{if(event.source!==parent||event.data?.type!=='line-character-motion')return;enabled=!!event.data.moving;visible=!!event.data.visible;loop=!!event.data.loop;started=0;resume();});
+document.addEventListener('visibilitychange',()=>{started=0;resume();});mq.addEventListener('change',resume);renderFrame(1.8,cv);</script>
+</body>
+</html>

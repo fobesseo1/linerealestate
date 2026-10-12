@@ -11,3 +11,5 @@ B uses 2.1-second banner changes, C 2.4 seconds, and D 2.2 seconds. B adds photo
 All previews use full-width section backgrounds with centrally aligned content capped by consistent gutters. Avoid a fixed-width outer page that abruptly cuts off section backgrounds on wide monitors. Keep A's featured card straight; do not rotate cards to create energy.
 
 Display order: A 제일 다이나믹 (dynamic), B 활기 있는 매물형 (market), C 사진 중심형 (cinematic), D 균형형 (balanced). Stable preview URLs remain unchanged.
+
+Character additions are separate options at /design-lab/dynamic-1 (A-1), market-1 (B-1), cinematic-1 (C-1), balanced-1 (D-1). Base layouts retain their artwork and motion. Shared navigation links both sets. User-supplied local canvas HTML is isolated in script-only sandboxed frames, transparent, drawn at 360px/30fps, paused offscreen and with the motion toggle/reduced-motion preference. Hero guide opens the existing inquiry form; search status reflects actual results; service artwork plays once. Original Downloads files remain intact.

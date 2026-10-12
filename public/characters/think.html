@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고민하는 아이콘</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="360" height="360"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  THINKING ICON — 1:1, 10.0s @ 60fps, transparent background, seamless loop.
+//  A round #E00B41 face with a coral highlight, two navy pill eyes, the building mark worn as a crown,
+//  a pale ring that fills while it thinks. Everything is a function of t (deterministic).
+//  ?variant=crown (default) | engrave   ?t=3.2 freezes a frame
+// =====================================================================
+const W = 1080, H = 1080, FPS = 60, DURATION = 10.0, NFRAMES = Math.round(DURATION * FPS);
+const QS = new URLSearchParams(location.search);
+let VARIANT = QS.get('variant') || 'crown';
+const COL = { red: '#E00B41', redD: '#B80835', coral: '#FF7A68', coralL: '#FFA08E', eye: '#1D1F3A', ring: '#F6C9CE', ringHi: '#E00B41' };
+const MARK = new Path2D('M0 141H14V43H69V89H73V0H132V81L148 89V149H140V95L132 91V149H100V69L124 78V8H81V98H69V153H42V89H61V51H22V153H0V141ZM50 98V145H61V98H50ZM108 81V141H124V88L108 81Z');   // square-logo-1.svg, 148x153
+const CX = 540, CY = 610, R = 265;
+
+// ---- motion: closed-form springs (a step response per key), so every frame is exact
+const TAU = Math.PI * 2, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, u) => a + (b - a) * u;
+function stepResp(tau, f = 2.2, z = 0.55) {
+  if (tau <= 0) return 0;
+  const w = TAU * f, wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * tau) * (Math.cos(wd * tau) + z / Math.sqrt(1 - z * z) * Math.sin(wd * tau));
+}
+function track(keys, t, f, z) { let v = keys[0][1]; for (let i = 1; i < keys.length; i++) v += (keys[i][1] - keys[i - 1][1]) * stepResp(t - keys[i][0], f, z); return v; }
+const easeIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const backOut = (u) => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+
+// ---- the performance (seconds): where the eyes look, how heavy the lids are, the tilt
+const LOOKX = [[0, 0], [1.0, -0.75], [3.0, 0.85], [3.55, -0.8], [4.15, 0.25], [5.0, 0.55], [7.2, -0.75], [8.7, 0]];
+const LOOKY = [[0, 0], [1.0, -0.8], [3.0, -0.05], [3.55, -0.05], [4.15, -0.2], [5.0, 0.65], [7.2, -0.8], [8.7, 0]];
+const LID = [[0, 0], [1.25, 0.38], [3.0, 0], [5.05, 0.5], [7.0, 0], [8.7, 0]];
+const TILT = [[0, 0], [1.0, -0.07], [3.0, 0.045], [3.55, -0.035], [4.15, 0.01], [5.0, 0.07], [7.2, -0.06], [8.7, 0]];
+const BLINKS = [0.55, 3.25, 7.0, 7.32, 9.3];
+const DOTS = [5.3, 5.6, 5.9], DOTS_OUT = 7.0;
+const CUES = { look: [1.0, 3.0, 3.55, 4.15, 5.0, 7.2, 8.7], blinks: BLINKS, dots: DOTS, dotsOut: DOTS_OUT };
+
+function state(t) {
+  const blink = BLINKS.reduce((m, b) => { const u = (t - b) / 0.17; return u >= 0 && u <= 1 ? Math.max(m, Math.sin(u * Math.PI)) : m; }, 0);
+  const lid = clamp(track(LID, t, 1.4, 0.8), 0, 0.9);
+  const ring = t < 7.2 ? 0.78 * easeIO(clamp(t / 7.2)) : 0.78 * (1 - easeIO(clamp((t - 7.2) / 2.0)));
+  return {
+    lx: track(LOOKX, t, 2.4, 0.5), ly: track(LOOKY, t, 2.4, 0.5),
+    lid, blink, tilt: track(TILT, t, 1.1, 0.45), crown: track(TILT, t - 0.08, 0.9, 0.3),
+    breath: 1 + 0.012 * Math.sin(TAU * t / 2.5), ring,
+  };
+}
+
+// ---- drawing
+let ctx;
+function head(s) {
+  // the face: #E00B41 with a coral light from the upper left and soft blobs like the reference
+  const g = ctx.createRadialGradient(CX - R * 0.45, CY - R * 0.5, R * 0.1, CX, CY, R * 1.15);
+  g.addColorStop(0, COL.coralL); g.addColorStop(0.42, COL.coral); g.addColorStop(0.85, COL.red); g.addColorStop(1, COL.redD);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.clip();
+  ctx.filter = 'blur(38px)';
+  ctx.fillStyle = 'rgba(255,140,120,0.55)'; ctx.beginPath(); ctx.ellipse(CX + R * 0.55, CY + R * 0.35, R * 0.35, R * 0.28, 0.5, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(200,6,52,0.45)'; ctx.beginPath(); ctx.ellipse(CX - R * 0.2, CY + R * 0.75, R * 0.6, R * 0.3, 0, 0, TAU); ctx.fill();
+  ctx.filter = 'none';
+  if (VARIANT === 'engrave') {   // the mark pressed into the face, lower right
+    ctx.save(); ctx.translate(CX + R * 0.12, CY + R * 0.18); ctx.scale(1.0, 1.0);
+    ctx.fillStyle = 'rgba(150,0,35,0.42)'; ctx.fill(MARK, 'evenodd');
+    ctx.translate(-2, -3); ctx.fillStyle = 'rgba(255,170,160,0.35)'; ctx.fill(MARK, 'evenodd');
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function eye(x, y, lid, side) {
+  const w = 21, h = 36;
+  ctx.save(); ctx.translate(x, y);
+  ctx.save(); ctx.rotate(side * 0.28 * Math.min(1, lid * 3)); ctx.beginPath(); ctx.rect(-w - 30, -h + 2 * h * lid - 1, 2 * w + 60, 2 * h + 40); ctx.restore(); ctx.clip();   // the lid comes down, lower at the outer corner
+  ctx.fillStyle = COL.eye; ctx.beginPath(); ctx.roundRect(-w, -h, 2 * w, 2 * h, w); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(-w * 0.25, -h * 0.45, 6, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function crown(rot, knock = 0) {
+  // the building mark worn on the head, pivoting on its base
+  const s = 1.45, bw = 148 * s, bh = 153 * s;
+  ctx.save(); ctx.translate(CX + 18, CY - R + 34); ctx.rotate(rot); ctx.translate(-bw / 2, -bh);
+  ctx.scale(s, s);
+  if (knock) { const k = knock / s; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.roundRect(-k, -k, 148 + 2 * k, 153 + 2 * k, k); ctx.fill(); ctx.restore(); return; }
+  ctx.shadowColor = 'rgba(120,0,30,0.25)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = COL.red; ctx.fill(MARK, 'evenodd');
+  ctx.restore();
+}
+function ring(p) {
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = COL.ring; ctx.lineWidth = 30; ctx.beginPath(); ctx.arc(CX, CY, R + 92, 0, TAU); ctx.stroke();
+  if (p > 0.002) {
+    const g = ctx.createConicGradient(-Math.PI / 2, CX, CY); g.addColorStop(0, COL.coral); g.addColorStop(0.8, COL.red); g.addColorStop(1, COL.red);
+    ctx.strokeStyle = g; ctx.beginPath(); ctx.arc(CX, CY, R + 92, -Math.PI / 2, -Math.PI / 2 + p * TAU); ctx.stroke();
+  }
+}
+function dots(t) {
+  DOTS.forEach((d, i) => {
+    const kin = backOut(clamp((t - d) / 0.3)), kout = 1 - easeIO(clamp((t - DOTS_OUT - i * 0.06) / 0.25));
+    const k = (t < d ? 0 : kin) * kout; if (k <= 0.01) return;
+    const th = (52 + i * 15 + Math.sin(TAU * (t * 0.8 + i * 0.25)) * 2) * Math.PI / 180, rr = R + 48;
+    const x = CX + rr * Math.sin(th), y = CY - rr * Math.cos(th);
+    ctx.fillStyle = COL.red; ctx.beginPath(); ctx.arc(x, y, (11 + i * 4) * k, 0, TAU); ctx.fill();
+  });
+}
+function renderFrame(t, canvas) {
+  const cv = canvas || document.getElementById('c');
+  ctx = cv.getContext('2d');
+  t = ((t % DURATION) + DURATION) % DURATION;
+  const S = state(t);
+  ctx.setTransform(1/3, 0, 0, 1/3, 0, 0); ctx.clearRect(0, 0, W, H);   // transparent: an icon over any screen
+  ring(S.ring);
+  ctx.save();
+  ctx.translate(CX, CY + R); ctx.rotate(S.tilt); ctx.scale(S.breath, 2 - S.breath); ctx.translate(-CX, -CY - R);   // pivot at the chin
+  if (VARIANT === 'crown') { ctx.save(); ctx.globalCompositeOperation = 'destination-out'; crown(S.crown * 1.6 - S.tilt * 0.4, 22); ctx.restore(); crown(S.crown * 1.6 - S.tilt * 0.4); }
+  head();
+  const ex = S.lx * 42, ey = S.ly * 34;
+  eye(CX - 72 + ex, CY - 40 + ey, Math.max(S.lid, S.blink), -1); eye(CX + 72 + ex, CY - 40 + ey, Math.max(S.lid * 0.45, S.blink), 1);
+  ctx.restore();
+  dots(t);
+}
+window.renderFrame = renderFrame;
+window.setVariant = (v) => { VARIANT = v; };
+window.TIMELINE = { width: W, height: H, fps: FPS, duration: DURATION, frames: NFRAMES, cues: CUES };
+const cv=document.getElementById('c');
+const mq=matchMedia('(prefers-reduced-motion: reduce)');
+let raf=0,started=0,visible=false,enabled=false,elapsed=0,last=0,loop=false;
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;}
+function frame(now){raf=0;if(!visible||!enabled||document.hidden||mq.matches)return;if(!started)started=now-elapsed*1000;if(now-last>=1000/30){elapsed=(now-started)/1000;renderFrame(loop?elapsed*1.15:Math.min(elapsed*1.25,DURATION-.01),cv);last=now;}if(loop||elapsed*1.25<DURATION-.01)raf=requestAnimationFrame(frame);}
+function resume(){stop();if(visible&&enabled&&!document.hidden&&!mq.matches)raf=requestAnimationFrame(frame);else renderFrame(1.8,cv);}
+window.addEventListener('message',event=>{if(event.source!==parent||event.data?.type!=='line-character-motion')return;enabled=!!event.data.moving;visible=!!event.data.visible;loop=!!event.data.loop;started=0;resume();});
+document.addEventListener('visibilitychange',()=>{started=0;resume();});mq.addEventListener('change',resume);renderFrame(1.8,cv);</script>
+</body>
+</html>

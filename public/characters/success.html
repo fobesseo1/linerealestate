@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>성공 아이콘</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="360" height="360"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  SUCCESS ICON — 1:1, 5.0s @ 60fps, transparent, seamless loop. The same character as index.html (the thinking icon).
+//  Neutral (= the thinking icon's first frame) -> crouch -> JUMP: a mouth appears, a wide open smile, ^^ eyes, blush,
+//  the ring fills all the way and flashes, sparkles burst -> happy hops and sways -> settles back to neutral.
+//  ?t=1.2 freezes a frame
+// =====================================================================
+const W = 1080, H = 1080, FPS = 60, DURATION = 5.0, NFRAMES = Math.round(DURATION * FPS);
+const QS = new URLSearchParams(location.search);
+const COL = { red: '#E00B41', redD: '#B80835', coral: '#FF7A68', coralL: '#FFA08E', eye: '#1D1F3A', ring: '#F6C9CE', gold: '#FFC94A', tongue: '#FF8A7A' };
+const MARK = new Path2D('M0 141H14V43H69V89H73V0H132V81L148 89V149H140V95L132 91V149H100V69L124 78V8H81V98H69V153H42V89H61V51H22V153H0V141ZM50 98V145H61V98H50ZM108 81V141H124V88L108 81Z');   // square-logo-1.svg, 148x153
+const CX = 540, CY = 610, R = 265;
+
+const TAU = Math.PI * 2, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, u) => a + (b - a) * u;
+function stepResp(tau, f = 2.2, z = 0.55) {
+  if (tau <= 0) return 0;
+  const w = TAU * f, wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * tau) * (Math.cos(wd * tau) + z / Math.sqrt(1 - z * z) * Math.sin(wd * tau));
+}
+function track(keys, t, f, z) { let v = keys[0][1]; for (let i = 1; i < keys.length; i++) v += (keys[i][1] - keys[i - 1][1]) * stepResp(t - keys[i][0], f, z); return v; }
+const easeIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const easeO = (u) => 1 - Math.pow(1 - u, 3);
+const backOut = (u) => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+
+// ---- the performance (seconds)
+const JUMP = [[0, 0], [0.4, 22], [0.68, -78], [1.25, 0], [1.6, -48], [2.0, 0], [2.35, -48], [2.75, 0], [3.1, -28], [3.45, 0]];
+const SQUASH = [[0, 0], [0.4, 0.12], [0.68, -0.06], [1.05, 0.06], [1.3, 0], [1.6, -0.05], [2.0, 0.05], [2.2, 0], [2.35, -0.05], [2.75, 0.05], [2.95, 0], [3.45, 0.03], [3.7, 0]];
+const TILT = [[0, 0], [1.3, 0.09], [1.8, -0.09], [2.3, 0.09], [2.8, -0.08], [3.3, 0.04], [3.8, 0]];
+const MOUTH = [[0, 0], [0.66, 1], [3.55, 0.3], [4.3, 0]];
+const HAPPY = [0.62, 3.75];        // ^^ eyes between these times
+const SQUINT = [0.3, 0.62];        // the crouch: eyes pinch before the jump
+const BLINKS = [4.55];
+const BURSTS = [{ t: 0.72, n: 10, r0: R + 30, r1: R + 215, s: 34 }, { t: 2.35, n: 6, r0: R + 60, r1: R + 165, s: 22 }];
+const RING_FULL = [0.5, 0.92], RING_OUT = [3.55, 4.35];
+const CUES = { crouch: 0.4, jump: 0.68, landings: [1.25, 2.0, 2.75, 3.45], hops: [1.6, 2.35, 3.1], bursts: BURSTS.map((b) => b.t), blinks: BLINKS, settle: 3.75 };
+
+function state(t) {
+  const blink = BLINKS.reduce((m, b) => { const u = (t - b) / 0.17; return u >= 0 && u <= 1 ? Math.max(m, Math.sin(u * Math.PI)) : m; }, 0);
+  const squint = t >= SQUINT[0] && t < SQUINT[1] ? Math.sin(clamp((t - SQUINT[0]) / (SQUINT[1] - SQUINT[0])) * Math.PI * 0.5) * 0.35 : 0;
+  const happy = t >= HAPPY[0] && t < HAPPY[1];
+  const fill = easeIO(clamp((t - RING_FULL[0]) / (RING_FULL[1] - RING_FULL[0])));
+  const ringA = 1 - easeIO(clamp((t - RING_OUT[0]) / (RING_OUT[1] - RING_OUT[0])));
+  const flash = t > RING_FULL[1] ? Math.exp(-(t - RING_FULL[1]) * 5) : 0;
+  return {
+    y: track(JUMP, t, 2.6, 0.5), sq: track(SQUASH, t, 3.2, 0.5), tilt: track(TILT, t, 1.6, 0.5),
+    crownY: track(JUMP, t - 0.07, 2.2, 0.35), crownR: track(TILT, t - 0.1, 1.2, 0.3),
+    mouth: clamp(track(MOUTH, t, 2.4, 0.55), 0, 1.15), happy, lid: Math.max(squint, blink),
+    blush: t < HAPPY[0] ? 0 : happy ? easeO(clamp((t - HAPPY[0]) / 0.25)) : 1 - easeO(clamp((t - HAPPY[1]) / 0.3)),
+    ring: fill * ringA, flash, breath: 1 + 0.012 * Math.sin(TAU * t / 2.5),
+  };
+}
+
+// ---- drawing (head, eye, crown and ring as in the thinking icon)
+let ctx;
+function head() {
+  const g = ctx.createRadialGradient(CX - R * 0.45, CY - R * 0.5, R * 0.1, CX, CY, R * 1.15);
+  g.addColorStop(0, COL.coralL); g.addColorStop(0.42, COL.coral); g.addColorStop(0.85, COL.red); g.addColorStop(1, COL.redD);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(CX, CY, R, 0, TAU); ctx.clip();
+  ctx.filter = 'blur(38px)';
+  ctx.fillStyle = 'rgba(255,140,120,0.55)'; ctx.beginPath(); ctx.ellipse(CX + R * 0.55, CY + R * 0.35, R * 0.35, R * 0.28, 0.5, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(200,6,52,0.45)'; ctx.beginPath(); ctx.ellipse(CX - R * 0.2, CY + R * 0.75, R * 0.6, R * 0.3, 0, 0, TAU); ctx.fill();
+  ctx.filter = 'none';
+  ctx.restore();
+}
+function eye(x, y, lid, side) {
+  const w = 21, h = 36;
+  ctx.save(); ctx.translate(x, y);
+  ctx.save(); ctx.rotate(side * 0.28 * Math.min(1, lid * 3)); ctx.beginPath(); ctx.rect(-w - 30, -h + 2 * h * lid - 1, 2 * w + 60, 2 * h + 40); ctx.restore(); ctx.clip();
+  ctx.fillStyle = COL.eye; ctx.beginPath(); ctx.roundRect(-w, -h, 2 * w, 2 * h, w); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(-w * 0.25, -h * 0.45, 6, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function happyEye(x, y) {   // ^ : a closed, smiling eye
+  ctx.strokeStyle = COL.eye; ctx.lineWidth = 15; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 26, y + 10); ctx.quadraticCurveTo(x, y - 34, x + 26, y + 10); ctx.stroke();
+}
+function mouth(m) {
+  if (m < 0.02) return;
+  const x = CX, y = CY + 62;
+  if (m < 0.35) {   // a small closed smile
+    const w = 30 + m * 120;
+    ctx.strokeStyle = COL.eye; ctx.lineWidth = 12; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - w, y); ctx.quadraticCurveTo(x, y + w * 0.75, x + w, y); ctx.stroke();
+    return;
+  }
+  // a wide open "D" smile with a tongue
+  const w = 70 + m * 40, d = 40 + m * 62;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(x - w, y - 6); ctx.quadraticCurveTo(x, y - 18, x + w, y - 6); ctx.bezierCurveTo(x + w, y + d * 0.9, x + w * 0.45, y + d * 1.15, x, y + d * 1.15); ctx.bezierCurveTo(x - w * 0.45, y + d * 1.15, x - w, y + d * 0.9, x - w, y - 6); ctx.closePath();
+  ctx.fillStyle = COL.eye; ctx.fill(); ctx.clip();
+  ctx.fillStyle = COL.tongue; ctx.beginPath(); ctx.ellipse(x + 6, y + d * 1.15, w * 0.62, d * 0.52, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.beginPath(); ctx.roundRect(x - w * 0.62, y - 16, w * 1.24, 20, 8); ctx.fill();   // a row of teeth
+  ctx.restore();
+}
+function blush(k) {
+  if (k <= 0.01) return;
+  ctx.fillStyle = `rgba(255,190,190,${0.7 * k})`;
+  ctx.beginPath(); ctx.ellipse(CX - 150, CY + 22, 40 * k, 22 * k, 0, 0, TAU); ctx.ellipse(CX + 150, CY + 22, 40 * k, 22 * k, 0, 0, TAU); ctx.fill();
+}
+function crown(rot, dy, knock = 0) {
+  const s = 1.45, bw = 148 * s, bh = 153 * s;
+  ctx.save(); ctx.translate(CX + 18, CY - R + 34 + dy); ctx.rotate(rot); ctx.translate(-bw / 2, -bh);
+  ctx.scale(s, s);
+  if (knock) { const k = knock / s; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.roundRect(-k, -k, 148 + 2 * k, 153 + 2 * k, k); ctx.fill(); ctx.restore(); return; }
+  ctx.shadowColor = 'rgba(120,0,30,0.25)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = COL.red; ctx.fill(MARK, 'evenodd');
+  ctx.restore();
+}
+function ring(p, flash) {
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = COL.ring; ctx.lineWidth = 30; ctx.beginPath(); ctx.arc(CX, CY, R + 92, 0, TAU); ctx.stroke();
+  if (p > 0.002) {
+    const g = ctx.createConicGradient(-Math.PI / 2, CX, CY); g.addColorStop(0, COL.coral); g.addColorStop(0.8, COL.red); g.addColorStop(1, COL.red);
+    ctx.strokeStyle = g; ctx.lineWidth = 30 + 16 * flash;
+    ctx.beginPath(); ctx.arc(CX, CY, R + 92, -Math.PI / 2, -Math.PI / 2 + p * TAU); ctx.stroke();
+  }
+  if (flash > 0.01) {   // the full ring rings out: a thin echo that grows and fades
+    ctx.globalAlpha = flash * 0.8; ctx.strokeStyle = COL.coral; ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.arc(CX, CY, R + 92 + (1 - flash) * 70, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+  }
+}
+function star4(x, y, s, c, rot) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(0, -s);
+  ctx.quadraticCurveTo(0, 0, s, 0); ctx.quadraticCurveTo(0, 0, 0, s); ctx.quadraticCurveTo(0, 0, -s, 0); ctx.quadraticCurveTo(0, 0, 0, -s); ctx.fill(); ctx.restore();
+}
+function sparkles(t) {
+  const cols = [COL.gold, COL.coral, COL.red];
+  BURSTS.forEach((b, bi) => {
+    const u = (t - b.t) / 1.0; if (u < 0 || u > 1) return;
+    for (let i = 0; i < b.n; i++) {
+      const a = (i / b.n) * TAU + bi * 0.3 + (i % 2) * 0.12, r = lerp(b.r0, b.r1 * (i % 2 ? 0.86 : 1), easeO(clamp(u * 1.6)));
+      const k = backOut(clamp(u * 5)) * (1 - easeIO(clamp((u - 0.55) / 0.45)));
+      if (k > 0.01) star4(CX + Math.cos(a) * r, CY + Math.sin(a) * r, b.s * k * (i % 2 ? 0.7 : 1), cols[i % 3], u * 2);
+      if (i % 2 === 0 && k > 0.01) { ctx.fillStyle = cols[(i + 1) % 3]; ctx.beginPath(); ctx.arc(CX + Math.cos(a + 0.18) * r * 0.9, CY + Math.sin(a + 0.18) * r * 0.9, 7 * k, 0, TAU); ctx.fill(); }
+    }
+  });
+}
+function renderFrame(t, canvas) {
+  const cv = canvas || document.getElementById('c');
+  ctx = cv.getContext('2d');
+  t = ((t % DURATION) + DURATION) % DURATION;
+  const S = state(t);
+  ctx.setTransform(1/3, 0, 0, 1/3, 0, 0); ctx.clearRect(0, 0, W, H);
+  ring(S.ring, S.flash);
+  sparkles(t);
+  ctx.save();
+  ctx.translate(0, S.y);
+  ctx.translate(CX, CY + R); ctx.rotate(S.tilt); ctx.scale(S.breath * (1 + S.sq * 0.6), (2 - S.breath) * (1 - S.sq)); ctx.translate(-CX, -CY - R);   // pivot at the chin
+  const cr = S.crownR * 1.6 - S.tilt * 0.4, cdy = (S.crownY - S.y) * 0.5;
+  ctx.save(); ctx.globalCompositeOperation = 'destination-out'; crown(cr, cdy, 22); ctx.restore(); crown(cr, cdy);
+  head();
+  blush(S.blush);
+  if (S.happy) { happyEye(CX - 72, CY - 40); happyEye(CX + 72, CY - 40); }
+  else { eye(CX - 72, CY - 40, S.lid, -1); eye(CX + 72, CY - 40, S.lid, 1); }
+  mouth(S.mouth);
+  ctx.restore();
+}
+window.renderFrame = renderFrame;
+window.setVariant = () => {};
+window.TIMELINE = { width: W, height: H, fps: FPS, duration: DURATION, frames: NFRAMES, cues: CUES };
+const cv=document.getElementById('c');
+const mq=matchMedia('(prefers-reduced-motion: reduce)');
+let raf=0,started=0,visible=false,enabled=false,elapsed=0,last=0,loop=false;
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0;}
+function frame(now){raf=0;if(!visible||!enabled||document.hidden||mq.matches)return;if(!started)started=now-elapsed*1000;if(now-last>=1000/30){elapsed=(now-started)/1000;renderFrame(loop?elapsed*1.15:Math.min(elapsed*1.25,DURATION-.01),cv);last=now;}if(loop||elapsed*1.25<DURATION-.01)raf=requestAnimationFrame(frame);}
+function resume(){stop();if(visible&&enabled&&!document.hidden&&!mq.matches)raf=requestAnimationFrame(frame);else renderFrame(1.8,cv);}
+window.addEventListener('message',event=>{if(event.source!==parent||event.data?.type!=='line-character-motion')return;enabled=!!event.data.moving;visible=!!event.data.visible;loop=!!event.data.loop;started=0;resume();});
+document.addEventListener('visibilitychange',()=>{started=0;resume();});mq.addEventListener('change',resume);renderFrame(1.8,cv);</script>
+</body>
+</html>
