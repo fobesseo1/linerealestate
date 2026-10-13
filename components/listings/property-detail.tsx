@@ -8,7 +8,7 @@ import {Card,CardTitle} from "@/components/ui/card";
 import {InquiryForm,type InquiryContext} from "@/components/inquiry/inquiry-form";
 import {usePageInquiry} from "@/components/site/site-context";
 import {kindLabel,type Publication} from "@/lib/content/types";
-import {amount,pyeong} from "@/lib/content/format";
+import {price,pyeong} from "@/lib/content/format";
 import {site} from "@/lib/site";
 import {PropertyGallery} from "./property-gallery";
 import {PhotoPlaceholder} from "./listing-card";
@@ -23,9 +23,9 @@ export function PropertyDetail({item}:{item:Publication}){
  const status=work?"실제 중개 완료 사례 · 현재 모집 아님":item.status==="completed"?"거래 완료":kindLabel[c.kind];
  const facts:[string,string][]=[
   ["거래 유형",kindLabel[c.kind]],
-  ...(c.kind==="sale"?[["매매가",amount(c.salePrice)] as [string,string]]:[["보증금",amount(c.deposit)],["월세",amount(c.rent)]] as [string,string][]),
+  ...(c.kind==="sale"?[["매매가",price(c.salePrice)] as [string,string]]:[["보증금",price(c.deposit)],["월세",price(c.rent)]] as [string,string][]),
   ["전용면적",c.area?`${c.area}㎡ · 약 ${pyeong(c.area)}평`:"미확인"],
-  ["층",c.floor||"미확인"],["권리금",amount(c.premium)],["관리비",amount(c.management)],["부가세",c.vat||"미확인"],
+  ["층",c.floor||"미확인"],["권리금",price(c.premium)],["관리비",price(c.management)],["부가세",c.vat||"미확인"],
   ["입주 가능일",c.available||"미확인"],["주차",c.parking||"미확인"],["건축물 용도",c.usage||"미확인"],["사용승인일",c.approvedDate||"미확인"],
  ];
  const story:[string,string][]=work?[["고객의 출발점",c.initial],["해결할 문제",c.issue],["협의하고 도운 일",c.actions],["결과·이후 관계",c.outcome]]:[];

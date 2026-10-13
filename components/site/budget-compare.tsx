@@ -2,6 +2,7 @@
 import {useState} from "react";
 import {Input} from "@/components/ui/input";
 import {cn} from "@/lib/utils";
+import {price} from "@/lib/content/format";
 
 // Illustrative assumptions only, as stated on the page; not a real listing.
 const rows=[
@@ -31,7 +32,7 @@ export function BudgetCompare(){
   <div className="mt-6 grid grid-cols-2 gap-5 max-md:gap-3">
    {totals.map(([label,cost])=><div key={label} className="rounded-lg border-t-4 border-brand bg-white p-6 max-md:p-4">
     <small className="text-caption text-gray-600">{label} · 입력 예산 대비</small>
-    <strong className={cn("mt-1.5 block text-2xl font-demibold max-md:text-xl",budget<cost&&"text-brand")}>{Math.abs(budget-cost).toLocaleString("ko-KR")}만원 {budget>=cost?"여유":"부족"}</strong>
+    <strong className={cn("mt-2 block text-2xl font-demibold max-md:text-xl",budget<cost&&"text-brand")}>{price(String(Math.abs(budget-cost)))} {budget>=cost?"여유":"부족"}</strong>
    </div>)}
   </div>
  </>;
