@@ -54,3 +54,10 @@ html[data-seon-motion=off] .seon-site *{animation:none!important;transition:none
 .seon-site .dl-dynamic .dl-feature-info .dl-money{margin:6px 0 8px}
 .seon-site .dl-dynamic .dl-feature-bottom{margin-top:8px;padding-top:8px;border-top:0}
 @media(max-width:700px){.seon-site .dl-dynamic .dl-feature-info{padding:12px 14px 10px}.seon-site .dl-dynamic .dl-feature-info h2{font-size:17px;margin-top:9px}.seon-site .dl-dynamic .dl-feature-photo{aspect-ratio:1.65/1}}
+
+/* Keep filter text inside its control and utility tools outside the content. */
+.seon-site .filter-group select{height:44px;min-height:44px;min-width:150px;padding:8px 30px 8px 12px;font-size:14px;line-height:1.4;color:#19191f;background:#fff;border:1px solid #c9c9d0}
+.seon-site .filter-group button{min-height:44px;padding:8px 14px;font-size:13px;line-height:1.4;color:#34343d;background:#fff;border:1px solid #c9c9d0;border-radius:4px;text-decoration:none}
+.seon-site .floating-tools{left:auto;right:max(16px,calc((100vw - 1440px)/2 - 110px));width:74px}
+@media(max-width:1660px){.seon-site .floating-tools{display:none}}
+@media(max-width:760px){.seon-site .filter-group select{font-size:16px;min-width:140px;flex:1}.seon-site .filter-group{width:100%}.seon-site .search-box input{font-size:16px}}
