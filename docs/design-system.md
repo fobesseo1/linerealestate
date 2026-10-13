@@ -1,7 +1,9 @@
 # 선부동산 전체 디자인 기준 — A-1
 
+이 문서가 공개 사이트 디자인의 유일한 기준이다. 이전 Airbnb 기반 문서(DESIGNstyle-lineestate.md)는 2026-10-13 사용자 결정으로 폐기했다.
+
 2026-10-13 사용자 승인: A-1 `제일 다이나믹 + 캐릭터`를 공개 사이트 전체 디자인으로 채택.
-기준 시안: https://linerealestate.vercel.app/design-lab/dynamic-1
+기준 화면: 현재 공개 홈 https://linerealestate.vercel.app/ (시안 비교 페이지는 채택 후 삭제)
 
 ## 브랜드
 
