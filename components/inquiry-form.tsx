@@ -2,14 +2,17 @@
 
 import { useId, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Clock, Phone } from "lucide-react";
+import {DesignCharacter} from "./design-character";
+import {useSiteMotion} from "./site-motion";
 import { Button } from "@/components/ui/button";
 
 export type InquiryContext = { kind: "general" | "listing" | "work" | "landlord"; title?: string; reference?: string; goal?: string };
 
-export function InquiryForm({ context, compact = false, onPreview }: {
-  context: InquiryContext; compact?: boolean; onPreview: (draft: string) => void;
+export function InquiryForm({ context, compact = false, characters=false, onPreview }: {
+  context: InquiryContext; compact?: boolean; characters?:boolean; onPreview: (draft: string) => void;
 }) {
   const id = useId();
+  const moving=useSiteMotion();
   const phoneRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
   const [busy,setBusy]=useState(false),[submitted,setSubmitted]=useState(false);
@@ -38,8 +41,9 @@ export function InquiryForm({ context, compact = false, onPreview }: {
     }catch(reason){setError(reason instanceof Error&&reason.name!=="TimeoutError"?reason.message:"접수 결과를 확인하지 못했습니다. 다시 눌러 확인하거나 전화해 주세요.");}
     finally{setBusy(false);}
   }
-  if(submitted)return <div className="inquiry-success" role="status"><strong>상담 문의가 접수됐습니다.</strong><p>김영선 공인중개사가 확인 후 연락드리겠습니다.</p>{context.reference&&<p>문의 자료: {context.reference}</p>}</div>;
+  if(submitted)return <div className="inquiry-success" role="status">{characters&&<DesignCharacter state="success" moving={moving}/>}<strong>상담 문의가 접수됐습니다.</strong><p>김영선 공인중개사가 확인 후 연락드리겠습니다.</p>{context.reference&&<p>문의 자료: {context.reference}</p>}</div>;
   return <form className={`inquiry-form ${compact ? "compact" : ""}`} onSubmit={submit}>
+    {characters&&<div className="inquiry-character-status"><DesignCharacter state={error?"fail":"think"} moving={moving} loop={busy}/><span>{busy?"문의 내용을 안전하게 접수하고 있습니다.":error?"입력 내용과 안내를 확인해 주세요.":"희망 업종과 예산부터 알려주세요."}</span></div>}
     <label style={{position:"absolute",left:"-10000px"}} aria-hidden="true">웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label>
     {!compact && !isListing && <label className="inquiry-field">어떤 도움이 필요하세요?
       <select name="goal" defaultValue={context.goal || "상가 임대차 후보 비교"}>

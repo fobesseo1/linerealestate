@@ -1,6 +1,6 @@
 # Homepage design comparison
 
-Keep the existing home page unchanged until the user selects a design. The user plans to decide later; this does not authorize switching the main homepage.
+On 2026-10-13 the user selected A-1 (dynamic-1) and explicitly authorized applying it across the public site. The full implementation contract is docs/design-system.md. Other previews remain available for comparison.
 
 Separate previews live at `/design-lab/market`, `/design-lab/cinematic`, `/design-lab/balanced`, and `/design-lab/dynamic`. All read existing published content without changing listings.
 
