@@ -45,3 +45,12 @@ html[data-seon-motion=off] .seon-site *{animation:none!important;transition:none
 .seon-site .contact-card .inquiry-field,.seon-site .contact-card .inquiry-consent,.seon-site .contact-card .inquiry-response,.seon-site .contact-card .inquiry-time{color:#d8d8df}.seon-site .contact-card .inquiry-error{color:#ff8dac}
 .seon-site .nav-saved{font-size:12px}.seon-site .main-nav.mobile-open>.container{flex-wrap:wrap;overflow:visible}.seon-site .main-nav.mobile-open .nav-tail{display:flex}
 .seon-site .detail-content-grid>div,.seon-site .detail-sidebar{min-width:0}.seon-site .managed-photo-thumbnails{max-width:100%}.seon-site .facts-grid dd{overflow-wrap:anywhere}@media(max-width:760px){.seon-site .detail-content-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Home feature: photo-led proportions, compact information beneath. */
+.seon-site .dl-dynamic .dl-feature-photo{height:auto;aspect-ratio:1.9/1}
+.seon-site .dl-dynamic .dl-feature-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.seon-site .dl-dynamic .dl-feature-info{padding:12px 20px 10px}
+.seon-site .dl-dynamic .dl-feature-info h2{min-height:0;margin:12px 0 6px;line-height:1.4}
+.seon-site .dl-dynamic .dl-feature-info .dl-money{margin:6px 0 8px}
+.seon-site .dl-dynamic .dl-feature-bottom{margin-top:8px;padding-top:8px;border-top:0}
+@media(max-width:700px){.seon-site .dl-dynamic .dl-feature-info{padding:12px 14px 10px}.seon-site .dl-dynamic .dl-feature-info h2{font-size:17px;margin-top:9px}.seon-site .dl-dynamic .dl-feature-photo{aspect-ratio:1.65/1}}
