@@ -61,3 +61,12 @@ html[data-seon-motion=off] .seon-site *{animation:none!important;transition:none
 .seon-site .floating-tools{left:auto;right:max(16px,calc((100vw - 1440px)/2 - 110px));width:74px}
 @media(max-width:1660px){.seon-site .floating-tools{display:none}}
 @media(max-width:760px){.seon-site .filter-group select{font-size:16px;min-width:140px;flex:1}.seon-site .filter-group{width:100%}.seon-site .search-box input{font-size:16px}}
+
+.seon-ad-popup{max-width:410px!important;padding:20px!important;background:#19191f!important;color:#fff!important;border:1px solid #393940!important;border-top:4px solid #e00b41!important}
+.seon-ad-popup h2{font-size:19px;font-weight:750;padding-right:35px}.seon-ad-popup p{font-size:11px;color:#b7b7c0;margin:5px 0 12px}
+.seon-ad-popup video{display:block;margin:0 auto;width:auto;max-width:100%;height:min(60dvh,600px);aspect-ratio:9/16;object-fit:contain;background:#19191f}
+.seon-ad-popup>button{color:#fff}.seon-ad-popup>button:hover{background:#393940!important}
+.seon-ad-actions{display:grid;gap:12px;margin-top:14px}.seon-ad-actions>button{border:0;background:#e00b41;color:#fff;border-radius:4px;padding:12px;font-size:13px;font-weight:700;cursor:pointer}
+.seon-ad-actions label{display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;color:#c5c5cd}.seon-ad-actions input{accent-color:#e00b41}
+.seon-site .main-nav .nav-ad{color:#ff8eae}
+@media(max-width:760px){.seon-ad-popup{max-width:calc(100vw - 24px)!important;padding:16px!important}.seon-ad-popup video{height:55dvh}.seon-ad-popup h2{font-size:17px}}
