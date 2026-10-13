@@ -1,6 +1,6 @@
 # 선부동산 등록·보정·승인
 
-관리자 주소: 로컬 `http://localhost:3010/admin/`, 공개 `https://fobesseo1.github.io/linerealestate/admin/`.
+관리자 주소: 로컬 `http://localhost:3010/admin/`, 공개 `https://linerealestate.vercel.app/admin/` (예전 GitHub Pages 주소는 이곳으로 이동).
 
 관리자는 `ysyh1730@naver.com`, `hjdh59@gmail.com` 두 이메일만 허용한다. 로그인 화면뿐 아니라 DB·사진 저장소의 RLS가 이메일을 확인한다. 허용 목록은 브라우저에서 수정할 수 없다. 경매 프로젝트의 기존 테이블·정책은 변경하지 않는다.
 

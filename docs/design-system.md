@@ -16,7 +16,8 @@
 ## 화면과 여백
 
 - 섹션 배경은 화면 양끝까지 이어지며 바깥 고정 폭으로 잘리지 않는다.
-- 일반 페이지 내용은 최대 1440px, 좌우 5% 여백. 홈 시안은 기존 A-1의 gutter 규칙.
+- 일반 페이지 내용은 최대 1440px, 좌우 5% 여백(`page` 유틸리티). 화면 끝까지 이어지는 홈 섹션은 같은 정렬의 `px-gutter`.
+- 여백·간격·크기는 가능하면 4px 배수(Tailwind 기본 간격 단위)를 사용한다. 글자 크기는 아래 토큰 단계를 따른다.
 - PC: 매물 카드 3열, 상세는 본문과 상담 사이드바 2열. 모바일: 카드·상세 1열.
 - 카드·사진·지도는 기울이지 않는다. 붉은 강조선, 직선 카드, 가벼운 그림자를 사용한다.
 - 헤더·내비게이션·푸터는 모든 공개 화면에서 같은 디자인을 사용한다. 관리자 화면은 별도.
@@ -26,7 +27,7 @@
 검증된 A-1의 큰 사진, 제목, 붉은 안내 띠, 실제 공개 매물 기반 가격·숫자, 흐르는 매물 띠,
 매물 검색·카드·중개 완료 사례·상담 안내를 사용한다. 시안 선택 메뉴와 추천 의견은 실제 홈에 표시하지 않는다.
 공통 헤더의 임대차·매매·사례·비용 비교·상담 과정 내비게이션은 유지한다.
-가상 매물 카드는 실제 홈과 실제 매물 목록에서 제거하되, 기존 가상 상세 링크와 비용 비교의 명시적 예시는 유지한다.
+시연용 가상 매물은 2026-10-14 사용자 결정으로 완전히 삭제했다. 옛 가상 상세 링크(`/#case/...`)는 매물 목록으로 연결한다. 비용 비교의 명시적 가정 예시는 유지한다.
 
 ## 매물과 사례
 
@@ -54,8 +55,15 @@
 
 ## 구현과 검증
 
-- `components/production-design.css`: `.seon-site`로 한정된 공개 스타일, 관리자 영향 없음.
-- `DesignLab production`: 공통 헤더/푸터 안에서 A-1 홈을 재사용, 비교안은 계속 별도 접근 가능.
+- 스타일은 Tailwind CSS v4 유틸리티로만 작성한다. 디자인 토큰은 `app/globals.css`의 `@theme`에 있다.
+  - 색: `brand`(#E00B41)·`brand-hover`·`brand-soft`·`brand-pale`·`brand-tint`, `ink`(#19191F)·`ink-raised`·`ink-line`, 사이트 전용 `gray-50…900`.
+  - 글자 크기: `text-micro`(9) `tiny`(10) `caption`(11) `xs`(12) `body`(13) `sm`(14) `md`(15) `base`(16) `lead`(17) `lg`(18) `xl`(20) `2xl`(24). 굵기: `font-demibold`(650) `font-strong`(750) `font-heavy`(850).
+  - 화면 구간: 모바일 `max-md`(≤760px), 태블릿 `max-lg`(≤1100px), 고정 도구 `2xl`(≥1661px).
+  - 새 색·크기가 필요하면 임의값을 반복하지 말고 토큰을 추가한다. `lib/utils.ts`의 `cn`에도 사용자 정의 글자 크기·굵기를 등록한다.
+- 공통 UI는 shadcn/ui 방식 컴포넌트(`components/ui`): Button, Dialog, Input/Textarea, NativeSelect, Badge, Card. shadcn 의미 토큰(`--primary`, `--border` 등)을 `:root`에 두고, 관리자 화면은 `.admin-shell`에서 같은 변수를 덮어 기존 무채색 디자인을 유지한다.
+- 공개 화면 구성: `app/(site)/layout.tsx` → `components/site/site-shell.tsx`(헤더·푸터·모바일 문의 바·고정 도구·상담창·광고 팝업·옛 `#` 주소 연결). 홈은 `components/home`, 매물·사례는 `components/listings`.
+- 주소: `/`, `/listings`(`?type=lease|sale`, `industry`, `rent`, `q`, `saved=1`), `/property/SUN-xxxx`, `/works`, `/works/SUN-xxxx`, `/compare`, `/process`. `/sale`은 매매 목록으로 연결한다. 매물·사례 페이지마다 제목·설명·공유 이미지를 만든다.
+- 공개 자료는 서버에서 30초 캐시로 읽고(`lib/content/public.ts`), 열린 화면은 `usePublications`가 계속 새로 고친다.
 - `SiteMotionControl/useSiteMotion`: 공개 화면 모션 설정.
 - 매물 목록·상세·사례·검색·찜·지도·사진 전환·문의창·필수 검증을 확인한다.
 - PC/모바일 수평 넘침, 글자 대비, 문의 버튼 가림을 확인한다. 실제 고객을 대신해 테스트 문의를 보내지 않는다.
