@@ -70,3 +70,22 @@ html[data-seon-motion=off] .seon-site *{animation:none!important;transition:none
 .seon-ad-actions label{display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;color:#c5c5cd}.seon-ad-actions input{accent-color:#e00b41}
 .seon-site .main-nav .nav-ad{color:#ff8eae}
 @media(max-width:760px){.seon-ad-popup{max-width:calc(100vw - 24px)!important;padding:16px!important}.seon-ad-popup video{height:55dvh}.seon-ad-popup h2{font-size:17px}}
+.seon-site .property-gallery-main{position:relative;touch-action:pan-y;isolation:isolate}
+.seon-site .property-gallery-main:focus-visible{outline:3px solid #e00b41;outline-offset:4px}
+.seon-site .property-gallery-main>img{animation:seon-photo-reveal .32s cubic-bezier(.16,1,.3,1)}
+.seon-site .property-photo-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:grid;place-items:center;width:54px;height:54px;border:1px solid #e00b4133;border-radius:50%;background:#fffffff0;color:#e00b41;box-shadow:0 4px 16px #19191f18;cursor:pointer;transition:background .18s,box-shadow .18s,transform .18s}
+.seon-site .property-photo-arrow.previous{left:14%}.seon-site .property-photo-arrow.next{right:14%}
+.seon-site .property-photo-arrow span{display:block;width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:15px solid currentColor;margin-left:3px}
+.seon-site .property-photo-arrow.previous span{border-left:0;border-right:15px solid currentColor;margin-left:-3px}
+.seon-site .property-photo-arrow:hover{background:#e00b41;color:#fff;box-shadow:0 0 0 7px #e00b4114,0 6px 20px #e00b4140;transform:translateY(-50%) scale(1.08)}
+.seon-site .property-photo-arrow:hover span{animation:seon-arrow-nudge .65s ease-in-out infinite}
+.seon-site .property-photo-arrow.previous:hover span{animation-direction:reverse}
+.seon-site .property-photo-arrow:active{transform:translateY(-50%) scale(.94)}
+.seon-site .property-photo-arrow:focus-visible{outline:3px solid #19191f;outline-offset:4px}
+.seon-site .property-gallery .managed-photo-thumbnails{position:relative}
+@keyframes seon-photo-reveal{from{opacity:.35;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
+@keyframes seon-arrow-nudge{0%,100%{transform:translateX(-2px)}50%{transform:translateX(3px)}}
+@media(max-width:760px){.seon-site .property-photo-arrow{width:44px;height:44px}.seon-site .property-photo-arrow.previous{left:12px}.seon-site .property-photo-arrow.next{right:12px}}
+html[data-seon-motion=off] .seon-site .property-gallery-main>img,html[data-seon-motion=off] .seon-site .property-photo-arrow span{animation:none}
+html[data-seon-motion=off] .seon-site .property-photo-arrow{transition:none}
+@media(prefers-reduced-motion:reduce){.seon-site .property-gallery-main>img,.seon-site .property-photo-arrow span{animation:none!important}.seon-site .property-photo-arrow{transition:none}}
