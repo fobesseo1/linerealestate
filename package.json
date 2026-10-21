@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --port 3010",
-    "build": "next build",
+    "build": "node scripts/check-design.mjs && next build",
+    "check:design": "node scripts/check-design.mjs",
     "build:pages": "node scripts/build-pages.mjs",
     "start": "next start --hostname 0.0.0.0 --port 3010",
     "typecheck": "tsc --noEmit",

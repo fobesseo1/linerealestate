@@ -16,7 +16,7 @@ export function useSiteMotion(){
 
 export function SiteMotionControl(){
  const moving=useSiteMotion();
- return <button className="absolute right-[5%] top-1 p-1.5 text-tiny text-[#bbb] max-md:top-0 max-md:text-micro" aria-pressed={!moving} onClick={()=>{document.documentElement.dataset.seonMotion=moving?"off":"on";window.dispatchEvent(new Event("seon-motion"));}}>
+ return <button className="absolute right-[5%] top-1 p-1.5 text-tiny text-gray-400 max-md:top-0 max-md:text-micro" aria-pressed={!moving} onClick={()=>{document.documentElement.dataset.seonMotion=moving?"off":"on";window.dispatchEvent(new Event("seon-motion"));}}>
   {moving?"움직임 끄기":"움직임 켜기"}
  </button>;
 }

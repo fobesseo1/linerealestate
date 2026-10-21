@@ -52,7 +52,7 @@ function SiteFooter(){
 function MobileInquiryBar(){
  const {openContact,pageInquiry}=useSite();
  return <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-ink-line bg-ink px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] text-white backdrop-blur-sm md:hidden">
-  <a href={site.mobileHref} aria-label="김영선 공인중개사에게 전화하기" className="flex h-11 w-18 items-center justify-center gap-2 rounded-lg border border-[#555] text-xs"><Phone size={18}/><span>전화</span></a>
+  <a href={site.mobileHref} aria-label="김영선 공인중개사에게 전화하기" className="flex h-11 w-18 items-center justify-center gap-2 rounded-lg border border-gray-800 text-xs"><Phone size={18}/><span>전화</span></a>
   <Button onClick={()=>openContact()} className="h-11 flex-1 text-body">{pageInquiry?"이 자료 상담 요청":"내 조건으로 문의하기"}<ArrowRight size={16}/></Button>
  </div>;
 }

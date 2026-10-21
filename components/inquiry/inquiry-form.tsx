@@ -52,7 +52,7 @@ export function InquiryForm({context,variant="dialog"}:{context:InquiryContext;v
   }finally{setBusy(false);}
  }
 
- if(submitted)return <div role="status" className="mt-4 rounded-lg border border-[#ddd] bg-gray-50 p-6 leading-[1.8] text-[#222]">
+ if(submitted)return <div role="status" className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-6 leading-[1.8] text-ink">
   <Character state="success" moving={moving} className="block"/>
   <strong className="text-lead">상담 문의가 접수됐습니다.</strong>
   <p>김영선 공인중개사가 확인 후 연락드리겠습니다.</p>
@@ -68,7 +68,7 @@ export function InquiryForm({context,variant="dialog"}:{context:InquiryContext;v
   </div>
   <label className="absolute -left-[10000px]" aria-hidden="true">웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label>
   {!sidebar&&!isListing&&<label className={field}>어떤 도움이 필요하세요?
-   <NativeSelect name="goal" defaultValue={context.goal||goals[0]} className="h-auto rounded-lg border-[#ddd] py-3 text-body">{goals.map(goal=><option key={goal}>{goal}</option>)}</NativeSelect>
+   <NativeSelect name="goal" defaultValue={context.goal||goals[0]} className="h-auto rounded-lg border-gray-200 py-3 text-body">{goals.map(goal=><option key={goal}>{goal}</option>)}</NativeSelect>
   </label>}
   <div className={cn("grid gap-3",!sidebar&&"md:grid-cols-2")}>
    <label className={field}><span className="flex items-center gap-2">연락받을 전화번호 <Required/></span>
@@ -82,7 +82,7 @@ export function InquiryForm({context,variant="dialog"}:{context:InquiryContext;v
   </label>
   <details className={cn("group text-caption",sidebar?"text-gray-300":"text-gray-600")}>
    <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 after:ml-1 after:text-gray-500 after:content-['+'] group-open:after:content-['−'] [&::-webkit-details-marker]:hidden"><Clock size={13}/>연락 가능한 시간 <span className="text-tiny text-gray-500">선택</span></summary>
-   <NativeSelect name="time" aria-label="연락 가능한 시간" defaultValue="시간 무관" wrapperClassName="mt-2" className="h-9 rounded-lg border-[#ddd] text-xs text-gray-800">
+   <NativeSelect name="time" aria-label="연락 가능한 시간" defaultValue="시간 무관" wrapperClassName="mt-2" className="h-9 rounded-lg border-gray-200 text-xs text-gray-800">
     <option>시간 무관</option><option>오전 (9시–12시)</option><option>오후 (12시–18시)</option><option>요구 사항에 적은 시간</option>
    </NativeSelect>
   </details>

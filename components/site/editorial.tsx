@@ -8,8 +8,8 @@ import {useSite} from "./site-context";
 /** Dark title band with a red rule, shared by the information pages. */
 export function EditorialHeading({eyebrow,title,children}:{eyebrow:string;title:ReactNode;children:ReactNode}){
  return <div className="mb-8 border-b-4 border-brand bg-ink p-11 text-white max-md:px-6 max-md:py-7">
-  <span className="inline-block text-tiny font-demibold tracking-[.12em] text-brand">{eyebrow}</span>
-  <h1 className="my-3 text-[clamp(28px,3.4vw,48px)] font-heavy leading-[1.35] tracking-[-0.05em]">{title}</h1>
+  <span className="inline-block text-tiny font-demibold tracking-eyebrow text-brand">{eyebrow}</span>
+  <h1 className="my-3 text-[clamp(28px,3.4vw,48px)] font-heavy leading-[1.35]">{title}</h1>
   <p className="max-w-185 text-sm leading-[1.8] text-gray-400 max-md:text-body">{children}</p>
  </div>;
 }

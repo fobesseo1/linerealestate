@@ -40,8 +40,8 @@ export function ListingsView({initial,filters:start}:{initial:Publication[]|null
   &&(!filters.q||`${c.title} ${c.industry} ${c.showMap?c.address:""}`.includes(filters.q)));
  return <>
   <section className="page pt-10 max-md:pt-6">
-   <h1 className="text-[clamp(27px,3vw,44px)] font-heavy tracking-[-1px]">{title}</h1>
-   <div className="mb-5 flex flex-wrap items-center justify-between gap-5 border-b border-t border-b-gray-200 border-t-[#222] py-5 max-md:flex-col max-md:items-start max-md:gap-3">
+   <h1 className="text-[clamp(27px,3vw,44px)] font-heavy">{title}</h1>
+   <div className="mb-5 flex flex-wrap items-center justify-between gap-5 border-b border-t border-b-gray-200 border-t-ink py-5 max-md:flex-col max-md:items-start max-md:gap-3">
     <div className="flex items-center gap-3 text-xs max-md:w-full max-md:flex-wrap">
      <NativeSelect aria-label="매물 업종" value={category} wrapperClassName="min-w-38 max-md:min-w-35 max-md:flex-1" onChange={event=>{const value=event.target.value;setFilters({...filters,saved:false,type:value==="상가 매매"?"sale":"lease",industry:value==="상가 매매"||value==="전체"?undefined:value});}}>
       {industries.map(label=><option key={label} value={label}>{label==="전체"?"전체 업종":label}</option>)}
@@ -68,7 +68,7 @@ export function WorksView({initial}:{initial:Publication[]|null}){
 
 function CardGrid({title,heading:Heading="h2",children}:{title:string;heading?:"h1"|"h2";children:React.ReactNode}){
  return <section className="page pb-18 pt-7">
-  <div className="mb-4"><Heading className="text-[30px] font-extrabold leading-normal tracking-[-1px]">{title}</Heading><p className="mb-5 mt-3 text-xs text-gray-500">김영선 공인중개사가 확인하고 게시한 자료입니다.</p></div>
+  <div className="mb-4"><Heading className="text-[30px] font-extrabold leading-normal">{title}</Heading><p className="mb-5 mt-3 text-xs text-gray-500">김영선 공인중개사가 확인하고 게시한 자료입니다.</p></div>
   <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1">{children}</div>
  </section>;
 }

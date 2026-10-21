@@ -22,7 +22,7 @@ export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
  },[index]);
  return <section aria-label={`${title} 사진`}>
   <div tabIndex={multiple?0:undefined} aria-label="매물 사진. 좌우 방향키로 사진 넘기기"
-   className="relative isolate h-88 touch-pan-y overflow-hidden border border-[#ddd] bg-ink focus-visible:outline-3 focus-visible:outline-offset-4 max-md:aspect-[4/3] max-md:h-auto"
+   className="relative isolate h-88 touch-pan-y overflow-hidden border border-gray-200 bg-ink focus-visible:outline-3 focus-visible:outline-offset-4 max-md:aspect-[4/3] max-md:h-auto"
    onKeyDown={event=>{if(multiple&&(event.key==="ArrowLeft"||event.key==="ArrowRight")){event.preventDefault();move(event.key==="ArrowLeft"?-1:1);}}}
    onPointerDown={event=>{if(event.pointerType==="touch")start.current={x:event.clientX,y:event.clientY};}}
    onPointerUp={event=>{const origin=start.current;start.current=null;if(!origin||!multiple)return;const dx=event.clientX-origin.x,dy=event.clientY-origin.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)move(dx<0?1:-1);}}
@@ -32,7 +32,7 @@ export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
    <span aria-live="polite" aria-atomic="true" className="absolute bottom-3 right-3 rounded-sm bg-black/70 px-2 py-1 text-micro text-white">{index+1} / {photos.length}</span>
   </div>
   <div ref={strip} className="relative my-3 flex max-w-full gap-3 overflow-x-auto">
-   {photos.map((photo,i)=><button type="button" key={photo.path} aria-label={`사진 ${i+1} 보기`} aria-pressed={index===i} onClick={()=>setIndex(i)} className="h-18 w-25 shrink-0 overflow-hidden border border-[#ddd] aria-pressed:border-3 aria-pressed:border-brand">
+   {photos.map((photo,i)=><button type="button" key={photo.path} aria-label={`사진 ${i+1} 보기`} aria-pressed={index===i} onClick={()=>setIndex(i)} className="h-18 w-25 shrink-0 overflow-hidden border border-gray-200 aria-pressed:border-3 aria-pressed:border-brand">
     <img src={photo.url} alt={photo.label||`사진 ${i+1}`} loading="lazy" className="size-full object-cover"/>
    </button>)}
   </div>
