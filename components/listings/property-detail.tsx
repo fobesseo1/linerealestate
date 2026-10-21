@@ -34,7 +34,7 @@ export function PropertyDetail({item}:{item:Publication}){
   <div className="mb-9 mt-7 flex items-center justify-between border-b-4 border-brand pb-8 pt-6 max-md:items-start max-md:gap-4">
    <div>
     <div className="mb-3 flex items-center gap-3 text-tiny text-gray-500"><Badge className="font-medium">{status}</Badge><span>{item.number}</span></div>
-    <h1 className="mb-3 text-[clamp(28px,3.1vw,44px)] font-heavy leading-[1.3]">{c.title}</h1>
+    <h1 className="mb-3 text-[clamp(28px,3.1vw,44px)] font-heavy leading-[1.3] tracking-[-0.045em]">{c.title}</h1>
     <p className="flex items-center gap-1 text-sm text-gray-600">{c.showMap?c.address:"군포·산본 · 상세 위치 상담"}</p>
    </div>
   </div>
@@ -58,7 +58,7 @@ export function PropertyDetail({item}:{item:Publication}){
    <aside className="sticky top-21 mt-8 max-h-[calc(100dvh-100px)] min-w-0 self-start overflow-y-auto overscroll-contain [scrollbar-width:thin] max-md:static max-md:mt-0 max-md:max-h-none max-md:overflow-visible max-md:pt-8">
     <div className="border-t-4 border-brand bg-ink p-6 text-white">
      <AgentHeading/>
-     <a href={site.mobileHref} className="mb-1 mt-5 block text-[27px] font-bold">{site.mobile}</a>
+     <a href={site.mobileHref} className="mb-1 mt-5 block text-[27px] font-bold tracking-[-0.03em]">{site.mobile}</a>
      <p className="mb-4 text-caption leading-[1.7] text-gray-400">{item.number}을 말씀해 주세요. 확인 후 최대한 빨리 안내드립니다.</p>
      <Button asChild variant="brand" className="h-12 w-full text-xs"><a href={site.mobileHref}><Phone size={16}/>전화하기</a></Button>
      <Button variant="brand" className="mt-3 h-12 w-full text-xs" onClick={()=>setInquiryOpen(!inquiryOpen)}>{inquiryOpen?"문의창 닫기":"메시지 남기기"}</Button>

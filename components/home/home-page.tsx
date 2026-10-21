@@ -40,10 +40,10 @@ export function HomePage({initial}:{initial:Publication[]|null}){
    <a href="#properties" className="flex items-center gap-2 text-caption max-md:hidden">매물 확인 <ArrowUpRight size={14}/></a>
   </div>
 
-  <section data-section="home" aria-label="첫 화면" className="relative grid grid-cols-[.9fr_1.1fr] items-center gap-[5%] overflow-hidden bg-ink px-gutter pb-14 pt-11 text-white before:pointer-events-none before:absolute before:bottom-5 before:left-0 before:text-[clamp(150px,22vw,350px)] before:font-black before:leading-none before:text-white/[0.025] before:content-['SANBON'] max-md:grid-cols-1 max-md:gap-9 max-md:py-9">
+  <section data-section="home" aria-label="첫 화면" className="relative grid grid-cols-[.9fr_1.1fr] items-center gap-[5%] overflow-hidden bg-ink px-gutter pb-14 pt-11 text-white before:pointer-events-none before:absolute before:bottom-5 before:left-0 before:text-[clamp(150px,22vw,350px)] before:font-black before:leading-none before:tracking-[-12px] before:text-white/[0.025] before:content-['SANBON'] max-md:grid-cols-1 max-md:gap-9 max-md:py-9">
    <div className="relative z-2">
     <Eyebrow>SANBON, YOUR NEXT PLACE</Eyebrow>
-    <h1 className="text-[clamp(40px,4.5vw,72px)] font-heavy leading-[1.15] max-md:text-[46px]">산본의 상가,<br/><em className="not-italic text-brand">지금 만나보세요.</em></h1>
+    <h1 className="text-[clamp(40px,4.5vw,72px)] font-heavy leading-[1.15] tracking-[-3px] max-md:text-[46px]">산본의 상가,<br/><em className="not-italic text-brand">지금 만나보세요.</em></h1>
     <p className="my-6 text-sm leading-[1.85] text-gray-400 max-md:my-5 max-md:text-body">상가 임대부터 매매, 입점 조건 협의까지.<br/>사진과 조건을 보고, 현장에서 함께 확인하세요.</p>
     <a href="#properties" className="relative inline-flex animate-nudge items-center gap-6 overflow-hidden bg-brand px-6 py-4 text-sm font-demibold text-white after:pointer-events-none after:absolute after:-inset-x-[40%] after:-inset-y-[80%] after:-translate-x-4/5 after:animate-shine after:bg-[linear-gradient(100deg,transparent_42%,#ffffff55_50%,transparent_58%)] after:content-['']">지금 등록된 상가 보기 <ArrowUpRight size={20}/></a>
     <div className="mt-9 flex gap-6 max-md:mt-6 max-md:gap-8">
@@ -85,7 +85,7 @@ export function HomePage({initial}:{initial:Publication[]|null}){
   </section>
 
   <section data-section="service" className="mx-gutter flex items-center justify-between gap-8 bg-brand px-[5%] py-11 text-white shadow-[8px_8px_0_var(--color-ink)] max-lg:flex-wrap max-md:mr-[calc(5vw+8px)] max-md:gap-6 max-md:px-[7%] max-md:py-8">
-   <div><Eyebrow className="text-white/75">A LOCAL PARTNER</Eyebrow><h2 className="text-[28px] font-medium leading-[1.35] max-md:text-[25px]">조건을 듣고,<br/>대안을 함께 찾습니다.</h2></div>
+   <div><Eyebrow className="text-white/75">A LOCAL PARTNER</Eyebrow><h2 className="text-[28px] font-medium leading-[1.35] tracking-[-1px] max-md:text-[25px]">조건을 듣고,<br/>대안을 함께 찾습니다.</h2></div>
    <p className="text-xs leading-[1.9] text-white/75 max-lg:flex-1 max-md:flex-none">희망 업종과 예산이 아직 정리되지 않아도 괜찮습니다.<br/>임대료와 시설, 입점 전 협의할 조건부터 이야기해 주세요.</p>
    <a href={site.mobileHref} className="flex items-center gap-3 whitespace-nowrap text-base"><Phone size={19}/>{site.mobile} <ArrowUpRight size={18}/></a>
   </section>
@@ -114,7 +114,7 @@ function Featured({item,count,index,onMove}:{item:Publication;count:number;index
   </div>
   <div key={`info-${item.id}`} className="animate-hit px-5 pb-3 pt-3 max-md:px-4">
    <span className="flex items-center gap-1 text-caption text-gray-600"><MapPin size={14}/>{placeLabel(item.content)}</span>
-   <h2 className="mb-2 mt-3 text-[21px] leading-[1.4] max-md:mt-2 max-md:text-lead"><Link href={href}>{item.content.title}</Link></h2>
+   <h2 className="mb-2 mt-3 text-[21px] leading-[1.4] tracking-[-0.6px] max-md:mt-2 max-md:text-lead"><Link href={href}>{item.content.title}</Link></h2>
    <Money item={item} className="my-2" size="text-[22px] max-md:text-lg"/>
    <div className="mt-2 flex items-center justify-between pt-2">
     <Link href={href} className="flex items-center gap-2 text-xs">매물 자세히 <ArrowUpRight size={16}/></Link>
@@ -138,7 +138,7 @@ function HomeCard({item,index}:{item:Publication;index:number}){
   </Link>
   <div className="p-6 max-md:p-4">
    <small className="text-tiny text-gray-500">{item.number} · {floorLabel(c)||"층 미확인"}{c.area?` · 약 ${pyeong(c.area)}평`:""}</small>
-   <h3 className="mb-4 mt-2 min-h-14 text-lg font-extrabold leading-normal max-md:min-h-0 max-md:text-md"><Link href={href}>{c.title}</Link></h3>
+   <h3 className="mb-4 mt-2 min-h-14 text-lg font-extrabold leading-normal tracking-[-0.6px] max-md:min-h-0 max-md:text-md"><Link href={href}>{c.title}</Link></h3>
    <Money item={item} size="text-[22px] max-md:text-base"/>
    <p className="mt-4 line-clamp-2 min-h-11 text-xs leading-[1.8] text-gray-500 max-md:text-caption">{c.description.slice(0,95)}</p>
    <Link href={href} className="mt-5 flex justify-between border-t border-gray-100 pt-4 text-caption">사진·조건 살펴보기 <ArrowUpRight size={16}/></Link>
@@ -147,7 +147,7 @@ function HomeCard({item,index}:{item:Publication;index:number}){
 }
 
 function Money({item,size,className}:{item:Publication;size:string;className?:string}){
- const c=item.content,value=cn("font-strong text-brand",size),label="text-tiny text-gray-500 max-md:text-micro";
+ const c=item.content,value=cn("font-strong tracking-[-0.5px] text-brand",size),label="text-tiny text-gray-500 max-md:text-micro";
  return <div className={cn("flex flex-wrap items-baseline gap-x-2 gap-y-1",className)}>
   {c.kind==="sale"?<><span className={label}>매매가</span><strong className={value}>{price(c.salePrice)}</strong></>
    :<><span className={label}>보증금</span><strong className={value}>{price(c.deposit)}</strong><i className="mx-1 not-italic text-gray-200">/</i><span className={label}>월세</span><strong className={value}>{price(c.rent)}</strong></>}
@@ -161,12 +161,12 @@ function Photo({item,className}:{item:Publication;className?:string}){
 }
 
 function Eyebrow({children,className}:{children:ReactNode;className?:string}){
- return <span className={cn("mb-4 block animate-tracking text-tiny font-bold tracking-eyebrow text-brand",className)}>{children}</span>;
+ return <span className={cn("mb-4 block animate-tracking text-tiny font-bold tracking-[2px] text-brand",className)}>{children}</span>;
 }
 
 function SectionTitle({eyebrow,title,children}:{eyebrow:string;title:string;children:ReactNode}){
  return <div className="mb-6 flex items-end justify-between gap-5 max-md:flex-col max-md:items-start max-md:gap-3">
-  <div><Eyebrow>{eyebrow}</Eyebrow><h2 className="text-[33px] font-heavy">{title}</h2></div>
+  <div><Eyebrow>{eyebrow}</Eyebrow><h2 className="text-[33px] font-heavy tracking-[-1px]">{title}</h2></div>
   {children}
  </div>;
 }

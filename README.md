@@ -34,7 +34,7 @@ npm run dev
 - `components/ui/` shadcn/ui 컴포넌트, `components/site/` 공통 헤더·푸터·상담창, `components/home/` A-1 홈, `components/listings/` 매물·사례, `components/inquiry/` 문의 양식
 - `lib/content/` 공개 자료 읽기·형식, `lib/inquiries/` 문의 저장·알림
 
-디자인 기준은 [DESIGN.md](DESIGN.md)(필수 규칙은 `npm run build` 때 자동 검사), 매물 등록·수정 절차는 [docs/admin-workflow.md](docs/admin-workflow.md)를 따릅니다.
+디자인 기준은 [docs/design-system.md](docs/design-system.md), 매물 등록·수정 절차는 [docs/admin-workflow.md](docs/admin-workflow.md)를 따릅니다.
 
 ## 네이버 지도
 

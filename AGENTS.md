@@ -17,12 +17,3 @@ The user explicitly authorized on 2026-10-12 that requests in this chat to add o
 Use port 3010 for this project. Do not stop or reuse port 3000, which belongs to another project. Keep this project's Supabase tables and storage buckets under the `lineestate` names; do not change the other project's data or authentication settings.
 
 All completed cases now use managed lineestate data, including the original four cases. Never edit lib/real-cases.json or static UI to update a case; use its SUN number. Existing links map through lib/content/legacy-work-routes.json. For every photo, preserve aspect ratio, set longest edge exactly 1200px, save WebP only (browser photo.ts or Node photo-node.mjs). Do not store new raw originals. Historical raw-file deletion requires separate scope approval.
-
-## Design rules (mandatory)
-
-Read `DESIGN.md` before creating or changing any UI. Unless there is a specific, stated reason:
-- Use Pretendard only, with letter spacing -2% everywhere (inherited from body; only `tracking-eyebrow` for English uppercase labels).
-- Style with Tailwind utilities and the tokens in `app/globals.css`; do not add CSS files, inline styles or other UI/CSS libraries.
-- Build UI from shadcn/ui components in `components/ui` (add missing ones with shadcn), combined with `cn()`.
-- Keep spacing on the 4px grid and show money only through `price()` (억/만원).
-`npm run build` runs `scripts/check-design.mjs` and fails on violations. A real exception needs `design-exception: <reason>` on that line.

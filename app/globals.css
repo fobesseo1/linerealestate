@@ -82,11 +82,6 @@
   --text-xl: 20px;
   --text-2xl: 24px;
 
-  /* Letter spacing: -2% everywhere. The only other value is the wide English eyebrow label. */
-  --tracking-*: initial;
-  --tracking-normal: -0.02em;
-  --tracking-eyebrow: 0.2em;
-
   --font-weight-demibold: 650;
   --font-weight-strong: 750;
   --font-weight-heavy: 850;
@@ -116,7 +111,7 @@
   @keyframes punch { from { transform: scale(1.12) translateX(-2%); } to { transform: scale(1.015) translateX(1%); } }
   @keyframes nudge { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(7px); } 90% { transform: translateX(-3px); } }
   @keyframes shine { 0%, 30% { translate: -80% 0; } 75%, 100% { translate: 80% 0; } }
-  @keyframes tracking { 0%, 100% { letter-spacing: 0.2em; } 50% { letter-spacing: 0.3em; } }
+  @keyframes tracking { 0%, 100% { letter-spacing: 2px; } 50% { letter-spacing: 3px; } }
   @keyframes ticker { to { transform: translateX(-33.333333%); } }
   @keyframes hop { from { translate: 0 0; } to { translate: 0 -12px; } }
   @keyframes photo-reveal { from { opacity: 0.35; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
@@ -124,11 +119,9 @@
 }
 
 @layer base {
-  /* letter-spacing in em is inherited as a fixed length, so each element sets -2% of its own size. */
-  *, ::before, ::after { border-color: var(--color-border); letter-spacing: var(--tracking-normal); }
-  :is(button, input, select, textarea, optgroup) { letter-spacing: var(--tracking-normal); }
+  * { border-color: var(--color-border); }
   html { scroll-behavior: smooth; }
-  body { font-size: var(--text-sm); color: #222; background: #fff; }
+  body { font-size: var(--text-sm); letter-spacing: -0.025em; color: #222; background: #fff; }
   a { text-decoration: none; }
   button { cursor: pointer; }
   button:disabled { cursor: default; }

@@ -14,8 +14,8 @@ const steps=[
 export default function Page(){
  return <div className="page min-h-[65vh] pb-18 pt-10">
   <EditorialHeading eyebrow="HOW WE WORK" title={<>연락한 다음에는,<br/>이렇게 함께 살펴봅니다.</>}>처음 상담부터 후보 검토, 조건 협의와 입점까지.</EditorialHeading>
-  <ol className="border-t border-t-ink">
-   {steps.map(([title,body,output],i)=><li key={title} className="my-4 flex items-center gap-8 border border-gray-200 bg-white p-6 max-md:flex-wrap max-md:gap-4 max-md:p-5">
+  <ol className="border-t border-t-[#222]">
+   {steps.map(([title,body,output],i)=><li key={title} className="my-4 flex items-center gap-8 border border-[#ddd] bg-white p-6 max-md:flex-wrap max-md:gap-4 max-md:p-5">
     <span className="text-[31px] font-heavy text-brand">0{i+1}</span>
     <div className="flex-1 max-md:basis-3/4"><h2 className="mb-2 text-[21px] font-demibold max-md:text-[19px]">{title}</h2><p className="text-body leading-[1.8] text-gray-600 max-md:text-xs">{body}</p></div>
     <strong className="flex items-center gap-2 rounded-lg bg-gray-50 px-4 py-3 text-xs font-medium max-md:ml-12 max-md:text-caption"><ClipboardList size={17}/>{output}</strong>

@@ -9,4 +9,4 @@
 .admin-tabs{max-width:1400px;margin:18px auto;display:flex;gap:12px;padding:0 24px;flex-wrap:wrap}.admin-inquiries-page{max-width:1100px;margin:0 auto;padding:24px}.inquiry-admin details summary{cursor:pointer;font-weight:700;margin-bottom:18px}.inquiry-admin h3{margin:22px 0 10px}.inquiry-admin p{line-height:1.7;margin:12px 0}.inquiry-admin a{color:#222;text-decoration:underline}.inquiry-admin form>button{margin:16px 12px 16px 0}
 /* Admin keeps its neutral theme: shadcn components read these instead of the public A-1 brand values. */
 .admin-shell{--background:#fff;--primary:#222;--primary-hover:rgb(34 34 34/.85);--muted:#f7f7f7;--input:#ddd;--border:#ddd}
-.admin-contact-phone{display:block;font-size:23px;font-weight:700;margin:20px 0 10px}
+.admin-contact-phone{display:block;font-size:23px;font-weight:700;letter-spacing:-.03em;margin:20px 0 10px}
