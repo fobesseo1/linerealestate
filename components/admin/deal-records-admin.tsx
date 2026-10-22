@@ -61,7 +61,7 @@ export default function DealRecordsAdmin(){
   <Field label="계약 연월"><Input type="month" value={draft.contracted_month} onChange={e=>setDraft({...draft,contracted_month:e.target.value})} required/></Field>
   <Field label="상호"><Input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})} placeholder="예: 편백회관 산본점" required maxLength={80}/></Field>
   <Field label="업종"><NativeSelect value={draft.industry} onChange={e=>setDraft({...draft,industry:e.target.value})} className="h-11 rounded-lg"><option value="">선택 안 함</option>{industries.map(i=><option key={i}>{i}</option>)}</NativeSelect></Field>
-  <Field label="네이버 지도 링크 (naver.me 공유 링크 가능)" className="col-span-2 max-md:col-span-1"><Input value={draft.map_url} onChange={e=>setDraft({...draft,map_url:e.target.value})} placeholder="https://naver.me/… 또는 https://map.naver.com/…"/></Field>
+  <Field label="네이버 지도 링크 (naver.me 공유 링크 가능)" className="col-span-2 max-md:col-span-1"><Input value={draft.map_url} onChange={e=>setDraft({...draft,map_url:e.target.value})} placeholder="네이버 지도 공유 링크 (https://naver.me/…)"/></Field>
   <Field label="거래 유형"><NativeSelect value={draft.deal_type} onChange={e=>setDraft({...draft,deal_type:e.target.value as Draft["deal_type"]})} className="h-11 rounded-lg">{Object.entries(dealTypeLabel).map(([v,l])=><option key={v} value={v}>{l}</option>)}</NativeSelect></Field>
   <Field label="연결할 중개 사례 번호"><Input value={draft.case_number} onChange={e=>setDraft({...draft,case_number:e.target.value})} placeholder="예: SUN-1005 (없으면 비움)" maxLength={20}/></Field>
   <Field label="같은 달 순서 (클수록 위)"><Input type="number" min={0} max={99} value={draft.sort_order} onChange={e=>setDraft({...draft,sort_order:Number(e.target.value)})}/></Field>
