@@ -8,6 +8,6 @@ export default async function Page({searchParams}:PageProps<"/listings">){
  const params=await searchParams;
  const one=(key:string)=>{const value=params[key];return (Array.isArray(value)?value[0]:value)||undefined;};
  const type=one("type");
- const filters:ListingFilters={type:type==="lease"||type==="sale"?type:undefined,industry:one("industry"),rent:one("rent"),q:one("q"),saved:one("saved")==="1"};
+ const filters:ListingFilters={type:type==="lease"||type==="sale"?type:undefined,industry:one("industry"),rent:one("rent"),q:one("q"),saved:one("saved")==="1",floor:one("floor")==="1"?"1":undefined,premium:one("premium")==="0"?"0":undefined,page:Number(one("page"))||undefined};
  return <ListingsView key={JSON.stringify(filters)} initial={await getPublications()} filters={filters}/>;
 }

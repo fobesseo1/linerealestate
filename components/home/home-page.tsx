@@ -1,33 +1,39 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState,type ReactNode} from "react";
-import {ArrowLeft,ArrowRight,ArrowUpRight,Building2,Check,MapPin,Phone,Search} from "lucide-react";
+import {ArrowLeft,ArrowRight,ArrowUpRight,Building2,MapPin,Phone} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {useSite} from "@/components/site/site-context";
 import {useSiteMotion} from "@/components/site/motion";
 import {usePublications} from "@/lib/content/use-publications";
 import {kindLabel,type DealRecord,type Publication} from "@/lib/content/types";
-import {detailHref,floorLabel,placeLabel,price,pyeong} from "@/lib/content/format";
+import {detailHref,isGroundFloor,noPremium,placeLabel,price} from "@/lib/content/format";
+import {CompactListingCard} from "@/components/listings/listing-card";
 import {site} from "@/lib/site";
 import {cn} from "@/lib/utils";
 import {Companion} from "./companion";
 import {RecordMarquee} from "./record-marquee";
 
-const categories=["전체","상가 임대","상가 매매"] as const;
-
-/** A-1 home: hero with rotating featured listing, listing strip and ticker, searchable cards, cases. */
+/** A-1 home: hero with rotating featured listing, condition shortcuts, ticker, newest listings, cases and record. Stays the same height as listings grow. */
 export function HomePage({initial,records,since}:{initial:Publication[]|null;records:DealRecord[];since:string}){
  const {items,failed}=usePublications(initial);
- const {openContact}=useSite();
+ const {openContact,favorites,toggleFavorite}=useSite();
  const moving=useSiteMotion();
  const [slide,setSlide]=useState(0);
- const [category,setCategory]=useState<(typeof categories)[number]>("전체");
- const [query,setQuery]=useState("");
  const listings=items.filter(item=>item.content.kind!=="work"&&item.status==="active");
  const works=items.filter(item=>item.content.kind==="work");
  const featured=listings[slide%Math.max(listings.length,1)];
- const shown=listings.filter(({content:c})=>(category==="전체"||(category==="상가 매매"?c.kind==="sale":c.kind==="lease"))&&(!query||`${c.title} ${c.industry} ${c.showMap?c.address:""}`.includes(query)));
+ const lease=listings.filter(i=>i.content.kind==="lease");
+ // Each shortcut opens the listings page with the same filter applied.
+ const shortcuts:[string,number,string][]=[
+  ["전체 매물",listings.length,"/listings"],
+  ["상가 임대",lease.length,"/listings?type=lease"],
+  ["상가 매매",listings.filter(i=>i.content.kind==="sale").length,"/listings?type=sale"],
+  ["1층 매물",listings.filter(i=>isGroundFloor(i.content)).length,"/listings?floor=1"],
+  ["무권리",listings.filter(i=>noPremium(i.content)).length,"/listings?premium=0"],
+  ["월세 150만원 이하",lease.filter(i=>i.content.rent!==""&&Number(i.content.rent)<=150).length,"/listings?type=lease&rent=150"],
+ ];
  useEffect(()=>{
   if(!moving||listings.length<2)return;
   const timer=setInterval(()=>{if(!document.hidden)setSlide(s=>(s+1)%listings.length);},1800);
@@ -53,14 +59,13 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
    </div>
    {featured?<Featured item={featured} count={listings.length} index={slide%listings.length} onMove={step=>setSlide(s=>(s+step+listings.length)%listings.length)}/>
     :<div role="status" className="rounded-sm bg-ink-raised px-8 py-24 text-center text-gray-400">{failed?"매물을 불러오지 못했습니다. 새로고침해 주세요.":"공개 중인 매물이 없습니다."}</div>}
-   <div className="relative z-1 col-span-full mt-4 grid grid-cols-3 gap-3 max-md:mt-0 max-md:grid-cols-1 max-md:gap-2">
-    {listings.map(item=><Link key={item.id} href={detailHref(item)} className="relative border border-l-4 border-ink-line bg-ink-raised p-5 text-white max-md:p-4">
-     <span className="text-tiny font-bold text-brand-soft">{floorLabel(item.content)||kindLabel[item.content.kind]}</span>
-     <strong className="my-2 block pr-3 text-body leading-[1.7] max-md:my-1">{item.content.title}</strong>
-     <small className="text-caption text-gray-400">{item.content.kind==="sale"?`매매 ${price(item.content.salePrice)}`:`월세 ${price(item.content.rent)}`}</small>
-     <ArrowUpRight size={18} className="absolute bottom-5 right-4 text-brand"/>
+   <nav aria-label="조건별 매물 바로가기" className="relative z-1 col-span-full mt-4 grid grid-cols-6 gap-3 max-lg:grid-cols-3 max-md:mt-0 max-md:gap-2">
+    {shortcuts.map(([label,count,href],i)=><Link key={label} href={href} className={cn("group relative flex flex-col gap-1 border border-ink-line bg-ink-raised p-4 text-white transition-colors hover:border-brand max-md:p-3",i===0&&"border-l-4 border-l-brand")}>
+     <span className="text-xs text-gray-400 max-md:text-caption">{label}</span>
+     <b className="text-2xl font-heavy max-md:text-xl">{count}<small className="ml-1 text-xs font-normal text-gray-400">개</small></b>
+     <ArrowUpRight size={16} className="absolute right-3 top-3 text-brand transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"/>
     </Link>)}
-   </div>
+   </nav>
   </section>
 
   {listings.length>0&&<div aria-label="등록된 매물 요약" className="overflow-hidden border-y-2 border-white bg-brand py-5 text-white max-md:py-3">
@@ -71,18 +76,14 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
    </div>
   </div>}
 
-  <Companion moving={moving} failed={failed} count={shown.length} onContact={()=>openContact()}/>
+  <Companion moving={moving} failed={failed} count={listings.length} onContact={()=>openContact()}/>
 
   <section id="properties" data-section="properties" className="scroll-mt-22 px-gutter pb-16 pt-14 max-md:py-10">
-   <SectionTitle eyebrow="PLACES AVAILABLE" title="지금, 산본의 자리"><p className="mb-1 text-xs text-gray-500">등록된 실제 매물의 사진과 조건을 비교해 보세요.</p></SectionTitle>
-   <div className="mb-7 flex justify-between gap-4 max-md:flex-wrap">
-    <div className="flex gap-2">{categories.map(label=><Button key={label} variant="outline" aria-pressed={category===label} onClick={()=>setCategory(label)} className="rounded-full border-gray-200 bg-transparent text-xs aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-white">{label}{category===label&&<Check size={14}/>}</Button>)}</div>
-    <label className="flex items-center gap-2 border-b border-gray-200 text-gray-500 max-md:w-full"><Search size={18}/><input aria-label="매물명·주소 검색" value={query} onChange={event=>setQuery(event.target.value)} placeholder="매물명·주소로 찾기" className="h-10 w-48 rounded-none border-0 bg-transparent text-xs text-ink outline-none max-md:w-full max-md:text-base"/></label>
+   <SectionTitle eyebrow="PLACES AVAILABLE" title="지금, 산본의 자리"><Link href="/listings" className="flex items-center gap-3 text-xs hover:text-brand">전체 매물 {listings.length}개 보기 <ArrowUpRight size={18}/></Link></SectionTitle>
+   <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-md:gap-3">
+    {listings.slice(0,8).map(item=><CompactListingCard key={item.id} item={item} saved={favorites.includes(item.number)} onFavorite={toggleFavorite}/>)}
    </div>
-   <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1">
-    {shown.map((item,index)=><HomeCard key={item.id} item={item} index={index}/>)}
-   </div>
-   {!shown.length&&<p className="p-6 text-sm text-gray-700">조건에 맞는 매물이 없습니다. 다른 검색어로 찾아보세요.</p>}
+   {listings.length>8&&<div className="mt-8 flex justify-center"><Button asChild variant="outline" className="h-12 rounded-sm border-2 border-ink bg-white px-8 text-sm font-bold hover:bg-ink hover:text-white"><Link href="/listings">전체 매물 {listings.length}개 보기 <ArrowRight size={16}/></Link></Button></div>}
   </section>
 
   <section data-section="service" className="mx-gutter flex items-center justify-between gap-8 bg-brand px-[5%] py-11 text-white shadow-[8px_8px_0_var(--color-ink)] max-lg:flex-wrap max-md:mr-[calc(5vw+8px)] max-md:gap-6 max-md:px-[7%] max-md:py-8">
@@ -129,24 +130,6 @@ function Featured({item,count,index,onMove}:{item:Publication;count:number;index
    </div>
   </div>
  </div>;
-}
-
-function HomeCard({item,index}:{item:Publication;index:number}){
- const c=item.content,href=detailHref(item);
- return <article data-companion-title={c.title} style={{animationDelay:`${index*55}ms`}} className="group overflow-hidden border-2 border-ink bg-white animate-rise transition-[translate,box-shadow] duration-200 hover:-translate-y-2 hover:shadow-[8px_8px_0_var(--color-brand)] max-md:grid max-md:grid-cols-[.8fr_1.2fr]">
-  <Link href={href} className="relative block h-58 overflow-hidden max-md:h-full max-md:min-h-56">
-   <Photo item={item} className="transition-transform duration-200 group-hover:scale-114"/>
-   <Badge className="absolute left-4 top-4">{kindLabel[c.kind]}</Badge>
-   <b className="absolute bottom-4 right-4 grid size-9 place-items-center rounded-full bg-brand text-white transition-transform duration-300 group-hover:rotate-45"><ArrowUpRight size={22}/></b>
-  </Link>
-  <div className="p-6 max-md:p-4">
-   <small className="text-tiny text-gray-500">{item.number} · {floorLabel(c)||"층 미확인"}{c.area?` · 약 ${pyeong(c.area)}평`:""}</small>
-   <h3 className="mb-4 mt-2 min-h-14 text-lg font-extrabold leading-normal tracking-[-0.6px] max-md:min-h-0 max-md:text-md"><Link href={href}>{c.title}</Link></h3>
-   <Money item={item} size="text-[22px] max-md:text-base"/>
-   <p className="mt-4 line-clamp-2 min-h-11 text-xs leading-[1.8] text-gray-500 max-md:text-caption">{c.description.slice(0,95)}</p>
-   <Link href={href} className="mt-5 flex justify-between border-t border-gray-100 pt-4 text-caption">사진·조건 살펴보기 <ArrowUpRight size={16}/></Link>
-  </div>
- </article>;
 }
 
 function Money({item,size,className}:{item:Publication;size:string;className?:string}){

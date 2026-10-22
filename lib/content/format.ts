@@ -14,3 +14,8 @@ export const pyeong=(area:string)=>(Number(area)/3.3058).toFixed(1);
 export const placeLabel=(c:Content)=>c.showMap?c.address:"군포·산본 · 상세 위치 상담";
 export const isWork=(item:Publication)=>item.content.kind==="work";
 export const detailHref=(item:Publication)=>`/${isWork(item)?"works":"property"}/${item.number}`;
+
+/** Ground floor, including split units such as "1·2층"; basements excluded. */
+export const isGroundFloor=(c:Content)=>/^1(층)?($|·)/.test(c.floor.trim());
+/** Key money explicitly entered as 0. A blank premium means unconfirmed, not none. */
+export const noPremium=(c:Content)=>c.premium.trim()==="0";
