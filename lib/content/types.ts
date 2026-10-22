@@ -24,5 +24,5 @@ export function cleanContent(input:Partial<Content>):Content {
  return result;
 }
 /** One brokered contract in the yearly record (lineestate_deal_records). */
-export type DealRecord = {id:string;contracted_month:string;name:string;industry:string;deal_type:"lease"|"sale"|"transfer";map_url:string;case_number:string;sort_order:number;visible:boolean};
+export type DealRecord = {id:string;contracted_month:string;name:string;industry:string;deal_type:"lease"|"sale"|"transfer";map_url:string;case_number:string;sort_order:number;visible:boolean;photo_path:string;updated_at:string};
 export const dealTypeLabel = {lease:"임대차",sale:"매매",transfer:"양도양수"};

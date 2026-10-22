@@ -56,3 +56,5 @@ Supabase Authentication → URL Configuration에 `https://fobesseo1.github.io/li
 ## 입점 기록
 
 관리자 `입점 기록` 탭에서 계약 연월·상호·업종·거래 유형·네이버 지도 링크를 한 줄씩 관리한다. 네이버 `naver.me` 공유 링크를 넣으면 저장 시 휴대폰·PC 모두에서 열리는 네이버 플레이스 링크(`m.place.naver.com/place/…/home`)로 바뀐다. 공개 화면은 전체 거래가 아닌 일부 소개로 표시한다. 상세 중개 사례가 있는 매장은 SUN 번호를 적어 연결한다. 공개 화면 `/works#records`와 홈 숫자에 30초 안에 반영된다. 데이터는 `lineestate_deal_records` 테이블에 있다.
+
+매장 사진: 기록마다 1장. `node scripts/record-photos.mjs`가 지도 링크가 있고 사진이 없는 기록에 네이버 플레이스 대표 사진을 받아 긴 변 1200px WebP로 `lineestate-public/records/`에 저장한다(`--force`는 기존 사진도 교체). 원본은 저장하지 않는다. 관리자 탭에서 기록별로 사진을 직접 바꿀 수 있다.
