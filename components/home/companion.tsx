@@ -1,12 +1,13 @@
 "use client";
-import {useEffect,useState,type CSSProperties} from "react";
+import {useEffect,useRef,useState,type CSSProperties} from "react";
 import {Character} from "@/components/inquiry/character";
 
 type Section="home"|"properties"|"service"|"works";
 
 /** One guide character that floats beside the home page, reacting to scroll position and hovered listings. */
 export function Companion({moving,failed,count,onContact}:{moving:boolean;failed:boolean;count:number;onContact:()=>void}){
- const [progress,setProgress]=useState(0),[scrolling,setScrolling]=useState(false),[section,setSection]=useState<Section>("home"),[target,setTarget]=useState(""),[hidden,setHidden]=useState(false);
+ const [progress,setProgress]=useState(0),[scrolling,setScrolling]=useState(false),[section,setSection]=useState<Section>("home"),[target,setTarget]=useState(""),[hidden,setHidden]=useState(false),[lift,setLift]=useState(0);
+ const box=useRef<HTMLElement>(null);
  useEffect(()=>{
   let raf=0,timer:ReturnType<typeof setTimeout>;
   const update=()=>{
@@ -15,17 +16,21 @@ export function Companion({moving,failed,count,onContact}:{moving:boolean;failed
    let current:Section="home";
    for(const area of document.querySelectorAll<HTMLElement>("[data-section]"))if(area.getBoundingClientRect().top<window.innerHeight*.6)current=area.dataset.section as Section;
    setSection(current);
+   // Stay above the footer so its phone number is never covered.
+   const footer=document.querySelector("footer")?.getBoundingClientRect().top??Infinity;
+   const bottom=box.current?parseFloat(getComputedStyle(box.current).bottom):64;
+   setLift(Math.max(0,Math.ceil(window.innerHeight-bottom-footer+16)));
   };
   const scroll=()=>{if(!raf)raf=requestAnimationFrame(update);setScrolling(true);clearTimeout(timer);timer=setTimeout(()=>setScrolling(false),220);};
   const over=(event:Event)=>setTarget(event.target instanceof Element?event.target.closest<HTMLElement>("[data-companion-title]")?.dataset.companionTitle||"":"");
-  window.addEventListener("scroll",scroll,{passive:true});document.addEventListener("pointerover",over);document.addEventListener("focusin",over);update();
-  return()=>{window.removeEventListener("scroll",scroll);document.removeEventListener("pointerover",over);document.removeEventListener("focusin",over);cancelAnimationFrame(raf);clearTimeout(timer);};
+  window.addEventListener("scroll",scroll,{passive:true});window.addEventListener("resize",scroll);document.addEventListener("pointerover",over);document.addEventListener("focusin",over);update();
+  return()=>{window.removeEventListener("scroll",scroll);window.removeEventListener("resize",scroll);document.removeEventListener("pointerover",over);document.removeEventListener("focusin",over);cancelAnimationFrame(raf);clearTimeout(timer);};
  },[]);
  if(hidden)return null;
  const empty=failed||count===0;
  const state=empty?"fail":scrolling&&!target?"think":"success";
  const text=target?`${target.slice(0,28)} · 사진과 조건을 확인해 보세요`:empty?"다른 조건으로 찾아볼까요?":section==="works"?"이곳의 다음 이야기를 만나보세요":section==="service"?"희망 업종과 예산을 함께 정리해요":section==="properties"?`${count}개 매물 · 마음에 드는 사진에 올려 보세요`:"내려 보세요! 함께 따라갈게요";
- return <aside className="fixed bottom-16 right-6 z-35 translate-y-[calc(-1*var(--shift))] text-[#292929] transition-[translate] duration-200 ease-out max-md:bottom-26 max-md:right-2" style={{"--shift":moving?`${Math.round(progress*90)}px`:"0px"} as CSSProperties}>
+ return <aside ref={box} className="fixed bottom-16 right-6 z-35 translate-y-[calc(-1*var(--shift))] text-[#292929] transition-[translate] duration-200 ease-out max-md:bottom-26 max-md:right-2" style={{"--shift":`${Math.max(moving?Math.round(progress*90):0,lift)}px`} as CSSProperties}>
   <button onClick={onContact} aria-label="캐릭터와 내 조건으로 상담 요청" className="flex max-w-full items-center text-left">
    <Character state={state} moving={moving} loop className={moving&&scrolling?"size-25 animate-hop max-md:size-18":"size-25 max-md:size-18"}/>
    <span className="grid w-55 gap-1 rounded-2xl border border-brand/20 bg-white px-4 py-3 shadow-[0_7px_25px_#20202018] max-md:w-42 max-md:px-3 max-md:py-2">

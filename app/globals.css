@@ -100,6 +100,8 @@
   --animate-shine: shine 2.4s ease-in-out infinite;
   --animate-tracking: tracking 2.5s ease-in-out infinite;
   --animate-ticker: ticker 18s linear infinite;
+  /* Moves left to right; the list is rendered twice so the loop is seamless. */
+  --animate-marquee-right: marquee-right var(--marquee-duration, 120s) linear infinite;
   --animate-hop: hop 0.28s ease-in-out infinite alternate;
   --animate-photo-reveal: photo-reveal 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-arrow-nudge: arrow-nudge 0.65s ease-in-out infinite;
@@ -113,6 +115,7 @@
   @keyframes shine { 0%, 30% { translate: -80% 0; } 75%, 100% { translate: 80% 0; } }
   @keyframes tracking { 0%, 100% { letter-spacing: 2px; } 50% { letter-spacing: 3px; } }
   @keyframes ticker { to { transform: translateX(-33.333333%); } }
+  @keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
   @keyframes hop { from { translate: 0 0; } to { translate: 0 -12px; } }
   @keyframes photo-reveal { from { opacity: 0.35; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
   @keyframes arrow-nudge { 0%, 100% { transform: translateX(-2px); } 50% { transform: translateX(3px); } }

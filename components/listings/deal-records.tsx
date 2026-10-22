@@ -1,12 +1,8 @@
 import Link from "next/link";
 import {ArrowUpRight,Building2,MapPin} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import config from "@/lib/content/public-config.json";
-import {publicBucket} from "@/lib/content/client";
+import {recordPhotoUrl} from "@/lib/content/record-photo";
 import type {DealRecord} from "@/lib/content/types";
-
-// The version query makes a replaced photo show up immediately at the same path.
-const photoUrl=(r:DealRecord)=>`${config.url}/storage/v1/object/public/${publicBucket}/${r.photo_path}?v=${encodeURIComponent(r.updated_at)}`;
 
 /** Selected brokered stores by year (not a complete list); detailed stories link to their case page. */
 export function DealRecords({records}:{records:DealRecord[]}){
@@ -35,7 +31,7 @@ export function DealRecords({records}:{records:DealRecord[]}){
 }
 
 function RecordCard({record:r}:{record:DealRecord}){
- const photo=r.photo_path?<img src={photoUrl(r)} alt={`${r.name} 매장 사진`} loading="lazy" className="size-full object-cover transition-transform duration-200 group-hover:scale-105"/>
+ const photo=r.photo_path?<img src={recordPhotoUrl(r)} alt={`${r.name} 매장 사진`} loading="lazy" className="size-full object-cover transition-transform duration-200 group-hover:scale-105"/>
   :<div className="flex size-full flex-col items-center justify-center gap-2 bg-gray-100 text-gray-500"><Building2 size={28}/><span className="text-caption">사진 준비 중</span></div>;
  const body=<>
   <div className="relative aspect-[4/3] overflow-hidden">

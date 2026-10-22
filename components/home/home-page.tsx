@@ -7,16 +7,17 @@ import {Button} from "@/components/ui/button";
 import {useSite} from "@/components/site/site-context";
 import {useSiteMotion} from "@/components/site/motion";
 import {usePublications} from "@/lib/content/use-publications";
-import {kindLabel,type Publication} from "@/lib/content/types";
+import {kindLabel,type DealRecord,type Publication} from "@/lib/content/types";
 import {detailHref,floorLabel,placeLabel,price,pyeong} from "@/lib/content/format";
 import {site} from "@/lib/site";
 import {cn} from "@/lib/utils";
 import {Companion} from "./companion";
+import {RecordMarquee} from "./record-marquee";
 
 const categories=["전체","상가 임대","상가 매매"] as const;
 
 /** A-1 home: hero with rotating featured listing, listing strip and ticker, searchable cards, cases. */
-export function HomePage({initial,records}:{initial:Publication[]|null;records:{count:number;since:string}}){
+export function HomePage({initial,records,since}:{initial:Publication[]|null;records:DealRecord[];since:string}){
  const {items,failed}=usePublications(initial);
  const {openContact}=useSite();
  const moving=useSiteMotion();
@@ -47,7 +48,7 @@ export function HomePage({initial,records}:{initial:Publication[]|null;records:{
     <p className="my-6 text-sm leading-[1.85] text-gray-400 max-md:my-5 max-md:text-body">상가 임대부터 매매, 입점 조건 협의까지.<br/>사진과 조건을 보고, 현장에서 함께 확인하세요.</p>
     <a href="#properties" className="relative inline-flex animate-nudge items-center gap-6 overflow-hidden bg-brand px-6 py-4 text-sm font-demibold text-white after:pointer-events-none after:absolute after:-inset-x-[40%] after:-inset-y-[80%] after:-translate-x-4/5 after:animate-shine after:bg-[linear-gradient(100deg,transparent_42%,#ffffff55_50%,transparent_58%)] after:content-['']">지금 등록된 상가 보기 <ArrowUpRight size={20}/></a>
     <div className="mt-9 flex gap-6 max-md:mt-6 max-md:gap-8">
-     {[[listings.length,"공개 중인 매물"],[records.since?`${records.since}~`:works.length,records.since?"산본 입점 중개":"등록된 중개 사례"],["산본","상가 전문"]].map(([value,label])=><span key={label} className="flex flex-col gap-2 text-tiny text-gray-600"><b className="text-2xl font-semibold text-white">{value}</b>{label}</span>)}
+     {[[listings.length,"공개 중인 매물"],[since?`${since}~`:works.length,since?"산본 입점 중개":"등록된 중개 사례"],["산본","상가 전문"]].map(([value,label])=><span key={label} className="flex flex-col gap-2 text-tiny text-gray-600"><b className="text-2xl font-semibold text-white">{value}</b>{label}</span>)}
     </div>
    </div>
    {featured?<Featured item={featured} count={listings.length} index={slide%listings.length} onMove={step=>setSlide(s=>(s+step+listings.length)%listings.length)}/>
@@ -92,7 +93,6 @@ export function HomePage({initial,records}:{initial:Publication[]|null;records:{
 
   <section data-section="works" className="scroll-mt-22 px-gutter pb-16 pt-14 max-md:py-10">
    <SectionTitle eyebrow="STORIES IN SANBON" title="계약 너머, 오픈까지"><Link href="/works" className="flex items-center gap-3 text-xs">중개 사례 전체 보기 <ArrowUpRight size={18}/></Link></SectionTitle>
-   {records.count>0&&<Link href="/works#records" className="-mt-2 mb-6 flex w-fit items-center gap-2 text-sm text-gray-800 hover:text-brand"><b className="font-heavy text-brand">{records.since}년부터</b> 산본 곳곳의 입점을 함께했습니다 · 입점 기록 보기 <ArrowUpRight size={16}/></Link>}
    <div className="grid grid-cols-4 gap-6 max-lg:gap-4 max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-6">
     {works.slice(0,4).map((item,i)=><Link key={item.id} href={detailHref(item)} data-companion-title={item.content.title} className="group">
      <div className="relative h-45 overflow-hidden rounded-md max-md:h-36"><Photo item={item} className="transition-transform duration-600 group-hover:scale-106"/><span className="absolute bottom-3 left-3 bg-black/65 px-2 py-1 text-micro text-white">중개 완료 사례</span></div>
@@ -102,6 +102,8 @@ export function HomePage({initial,records}:{initial:Publication[]|null;records:{
     </Link>)}
    </div>
   </section>
+
+  <RecordMarquee records={records} since={since}/>
  </div>;
 }
 
