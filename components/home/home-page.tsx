@@ -68,26 +68,26 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
    </nav>
   </section>
 
-  {listings.length>0&&<div aria-label="등록된 매물 요약" className="overflow-hidden border-y-2 border-white bg-brand py-5 text-white max-md:py-3">
-   <div className="flex w-max animate-ticker hover:[animation-play-state:paused]" style={{"--ticker-duration":`${listings.length*9}s`} as CSSProperties}>
-    {[0,1,2].map(copy=><span key={copy} aria-hidden={copy>0} className="flex shrink-0 gap-10 pr-10">
-     {listings.map(item=><span key={item.id} className="flex items-center gap-4 whitespace-nowrap text-sm font-demibold max-md:text-xs"><b className="border border-white/45 p-1 text-tiny">{item.number}</b>{item.content.title}<i className="text-2xl not-italic">↗</i></span>)}
+  {listings.length>0&&<div aria-label="등록된 매물 요약" className="overflow-hidden border-y-2 border-white bg-brand py-4 text-white max-md:py-2">
+   <div className="flex w-max animate-ticker hover:[animation-play-state:paused] focus-within:[animation-play-state:paused]" style={{"--ticker-duration":`${listings.length*9}s`} as CSSProperties}>
+    {[0,1,2].map(copy=><span key={copy} aria-hidden={copy>0||undefined} className="flex shrink-0 gap-4 pr-4">
+     {listings.map(item=><Link key={item.id} href={detailHref(item)} tabIndex={copy>0?-1:undefined} className="group/item flex items-center gap-4 whitespace-nowrap rounded-sm px-3 py-1 text-sm font-demibold transition-colors hover:bg-white hover:text-brand focus-visible:bg-white focus-visible:text-brand max-md:text-xs">
+      <b className="border border-white/45 p-1 text-tiny group-hover/item:border-brand group-focus-visible/item:border-brand">{item.number}</b>{item.content.title}
+      <ArrowUpRight size={22} className="transition-transform group-hover/item:-translate-y-0.5 group-hover/item:translate-x-0.5"/>
+     </Link>)}
     </span>)}
    </div>
   </div>}
 
   <Companion moving={moving} failed={failed} count={listings.length} onContact={()=>openContact()}/>
 
-  <section id="properties" data-section="properties" className="scroll-mt-22 px-gutter pb-16 pt-14 max-md:py-10">
-   <SectionTitle eyebrow="PLACES AVAILABLE" title="지금, 산본의 자리"><Link href="/listings" className="flex items-center gap-3 text-xs hover:text-brand">전체 매물 {listings.length}개 보기 <ArrowUpRight size={18}/></Link></SectionTitle>
+  <HomeSection id="properties" section="properties" eyebrow="PLACES AVAILABLE" title="지금, 산본의 자리" description="김영선 공인중개사가 확인하고 올린 최신 매물입니다." more={["/listings",`전체 매물 ${listings.length}개 보기`]}>
    <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-md:gap-3">
     {listings.slice(0,8).map(item=><CompactListingCard key={item.id} item={item} saved={favorites.includes(item.number)} onFavorite={toggleFavorite}/>)}
    </div>
-   {listings.length>8&&<div className="mt-8 flex justify-center"><Button asChild variant="outline" className="h-12 rounded-sm border-2 border-ink bg-white px-8 text-sm font-bold hover:bg-ink hover:text-white"><Link href="/listings">전체 매물 {listings.length}개 보기 <ArrowRight size={16}/></Link></Button></div>}
-  </section>
+  </HomeSection>
 
-  <section data-section="works" className="scroll-mt-22 px-gutter pb-16 pt-14 max-md:py-10">
-   <SectionTitle eyebrow="STORIES IN SANBON" title="계약 너머, 오픈까지"><Link href="/works" className="flex items-center gap-3 text-xs">중개 사례 전체 보기 <ArrowUpRight size={18}/></Link></SectionTitle>
+  <HomeSection section="works" divider eyebrow="STORIES IN SANBON" title="계약 너머, 오픈까지" description="조건 협의부터 오픈까지 함께한 중개 이야기입니다." more={["/works","중개 사례 전체 보기"]}>
    <div className="grid grid-cols-4 gap-6 max-lg:gap-4 max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-6">
     {works.slice(0,4).map((item,i)=><Link key={item.id} href={detailHref(item)} data-companion-title={item.content.title} className="group">
      <div className="relative h-45 overflow-hidden rounded-md max-md:h-36"><Photo item={item} className="transition-transform duration-600 group-hover:scale-106"/><span className="absolute bottom-3 left-3 bg-black/65 px-2 py-1 text-micro text-white">중개 완료 사례</span></div>
@@ -96,9 +96,11 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
      <p className="text-xs leading-[1.7] text-gray-500 max-md:text-caption">{item.content.description.slice(0,85)}</p>
     </Link>)}
    </div>
-  </section>
+  </HomeSection>
 
-  <RecordMarquee records={records} since={since}/>
+  {records.length>0&&<HomeSection section="records" divider eyebrow="STORES WE OPENED" title="산본 입점 기록" description={`${since}년부터 함께한 매장 가운데 일부입니다. 매장을 누르면 네이버 플레이스가 열립니다.`} more={["/works#records","입점 기록 전체 보기"]}>
+   <RecordMarquee records={records}/>
+  </HomeSection>}
 
   <section data-section="service" aria-label="상담 안내" className="px-gutter pb-16 max-md:pb-10">
    <div className="flex items-center justify-between gap-8 border border-t-4 border-gray-200 border-t-brand bg-white px-10 py-9 max-lg:flex-wrap max-md:gap-5 max-md:px-6 max-md:py-7">
@@ -155,9 +157,21 @@ function Eyebrow({children,className}:{children:ReactNode;className?:string}){
  return <span className={cn("mb-4 block animate-tracking text-tiny font-bold tracking-[2px] text-brand",className)}>{children}</span>;
 }
 
-function SectionTitle({eyebrow,title,children}:{eyebrow:string;title:string;children:ReactNode}){
- return <div className="mb-6 flex items-end justify-between gap-5 max-md:flex-col max-md:items-start max-md:gap-3">
-  <div><Eyebrow>{eyebrow}</Eyebrow><h2 className="text-[33px] font-heavy tracking-[-1px]">{title}</h2></div>
-  {children}
- </div>;
+/** Shared frame for home content sections: same spacing, divider, heading row and "see all" button. */
+function HomeSection({id,section,divider=false,eyebrow,title,description,more,children}:{id?:string;section:string;divider?:boolean;eyebrow:string;title:string;description:string;more:[string,string];children:ReactNode}){
+ const [href,label]=more;
+ return <section id={id} data-section={section} className="scroll-mt-22 px-gutter">
+  <div className={cn("py-16 max-md:py-10",divider&&"border-t-2 border-ink")}>
+   <div className="mb-8 max-md:mb-6">
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <div className="flex items-baseline justify-between gap-4">
+     <h2 className="text-[33px] font-heavy leading-tight tracking-[-1px] max-md:text-[28px]">{title}</h2>
+     <Link href={href} className="flex shrink-0 items-center gap-2 text-xs hover:text-brand max-md:hidden">{label} <ArrowUpRight size={16}/></Link>
+    </div>
+    <p className="mt-2 text-sm text-gray-700 max-md:text-body">{description}</p>
+   </div>
+   {children}
+   <div className="mt-10 flex justify-center max-md:mt-8"><Button asChild variant="outline" className="h-12 rounded-sm border-2 border-ink bg-white px-8 text-sm font-bold hover:bg-ink hover:text-white"><Link href={href}>{label} <ArrowRight size={16}/></Link></Button></div>
+  </div>
+ </section>;
 }
