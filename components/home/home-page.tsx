@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {useEffect,useState,type ReactNode} from "react";
+import {useEffect,useState,type CSSProperties,type ReactNode} from "react";
 import {ArrowLeft,ArrowRight,ArrowUpRight,Building2,MapPin,Phone} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
@@ -69,7 +69,7 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
   </section>
 
   {listings.length>0&&<div aria-label="등록된 매물 요약" className="overflow-hidden border-y-2 border-white bg-brand py-5 text-white max-md:py-3">
-   <div className="flex w-max animate-ticker hover:[animation-play-state:paused]">
+   <div className="flex w-max animate-ticker hover:[animation-play-state:paused]" style={{"--ticker-duration":`${listings.length*9}s`} as CSSProperties}>
     {[0,1,2].map(copy=><span key={copy} aria-hidden={copy>0} className="flex shrink-0 gap-10 pr-10">
      {listings.map(item=><span key={item.id} className="flex items-center gap-4 whitespace-nowrap text-sm font-demibold max-md:text-xs"><b className="border border-white/45 p-1 text-tiny">{item.number}</b>{item.content.title}<i className="text-2xl not-italic">↗</i></span>)}
     </span>)}
@@ -86,12 +86,6 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
    {listings.length>8&&<div className="mt-8 flex justify-center"><Button asChild variant="outline" className="h-12 rounded-sm border-2 border-ink bg-white px-8 text-sm font-bold hover:bg-ink hover:text-white"><Link href="/listings">전체 매물 {listings.length}개 보기 <ArrowRight size={16}/></Link></Button></div>}
   </section>
 
-  <section data-section="service" className="mx-gutter flex items-center justify-between gap-8 bg-brand px-[5%] py-11 text-white shadow-[8px_8px_0_var(--color-ink)] max-lg:flex-wrap max-md:mr-[calc(5vw+8px)] max-md:gap-6 max-md:px-[7%] max-md:py-8">
-   <div><Eyebrow className="text-white/75">A LOCAL PARTNER</Eyebrow><h2 className="text-[28px] font-medium leading-[1.35] tracking-[-1px] max-md:text-[25px]">조건을 듣고,<br/>대안을 함께 찾습니다.</h2></div>
-   <p className="text-xs leading-[1.9] text-white/75 max-lg:flex-1 max-md:flex-none">희망 업종과 예산이 아직 정리되지 않아도 괜찮습니다.<br/>임대료와 시설, 입점 전 협의할 조건부터 이야기해 주세요.</p>
-   <a href={site.mobileHref} className="flex items-center gap-3 whitespace-nowrap text-base"><Phone size={19}/>{site.mobile} <ArrowUpRight size={18}/></a>
-  </section>
-
   <section data-section="works" className="scroll-mt-22 px-gutter pb-16 pt-14 max-md:py-10">
    <SectionTitle eyebrow="STORIES IN SANBON" title="계약 너머, 오픈까지"><Link href="/works" className="flex items-center gap-3 text-xs">중개 사례 전체 보기 <ArrowUpRight size={18}/></Link></SectionTitle>
    <div className="grid grid-cols-4 gap-6 max-lg:gap-4 max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-6">
@@ -105,6 +99,17 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
   </section>
 
   <RecordMarquee records={records} since={since}/>
+
+  <section data-section="service" aria-label="상담 안내" className="px-gutter pb-16 max-md:pb-10">
+   <div className="flex items-center justify-between gap-8 border border-t-4 border-gray-200 border-t-brand bg-white px-10 py-9 max-lg:flex-wrap max-md:gap-5 max-md:px-6 max-md:py-7">
+    <div><Eyebrow>A LOCAL PARTNER</Eyebrow><h2 className="text-[28px] font-heavy leading-[1.35] max-md:text-2xl">조건을 듣고,<br/>대안을 함께 찾습니다.</h2></div>
+    <p className="text-sm leading-[1.9] text-gray-700 max-lg:flex-1 max-md:flex-none max-md:text-body">희망 업종과 예산이 아직 정리되지 않아도 괜찮습니다.<br/>임대료와 시설, 입점 전 협의할 조건부터 이야기해 주세요.</p>
+    <div className="flex shrink-0 gap-3 max-md:w-full">
+     <Button asChild variant="outline" className="h-12 rounded-sm border-2 border-brand bg-white px-5 text-sm font-bold text-brand hover:bg-brand-tint max-md:flex-1"><a href={site.mobileHref}><Phone size={17}/>{site.mobile}</a></Button>
+     <Button onClick={()=>openContact()} className="h-12 rounded-sm px-6 text-sm font-bold max-md:flex-1">상담 요청 <ArrowRight size={16}/></Button>
+    </div>
+   </div>
+  </section>
  </div>;
 }
 

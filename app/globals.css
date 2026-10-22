@@ -99,9 +99,6 @@
   --animate-nudge: nudge 1.8s ease-in-out infinite;
   --animate-shine: shine 2.4s ease-in-out infinite;
   --animate-tracking: tracking 2.5s ease-in-out infinite;
-  --animate-ticker: ticker 18s linear infinite;
-  /* Moves left to right; the list is rendered twice so the loop is seamless. */
-  --animate-marquee-right: marquee-right var(--marquee-duration, 120s) linear infinite;
   --animate-hop: hop 0.28s ease-in-out infinite alternate;
   --animate-photo-reveal: photo-reveal 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-arrow-nudge: arrow-nudge 0.65s ease-in-out infinite;
@@ -119,6 +116,14 @@
   @keyframes hop { from { translate: 0 0; } to { translate: 0 -12px; } }
   @keyframes photo-reveal { from { opacity: 0.35; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
   @keyframes arrow-nudge { 0%, 100% { transform: translateX(-2px); } 50% { transform: translateX(3px); } }
+}
+
+/* Inline so each strip reads its own --ticker-duration / --marquee-duration (set from the item count);
+   a non-inline token would resolve the variable once on :root and ignore it. */
+@theme inline {
+  --animate-ticker: ticker var(--ticker-duration, 18s) linear infinite;
+  /* Moves left to right; the list is rendered twice so the loop is seamless. */
+  --animate-marquee-right: marquee-right var(--marquee-duration, 120s) linear infinite;
 }
 
 @layer base {
