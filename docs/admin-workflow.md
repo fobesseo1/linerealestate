@@ -52,3 +52,7 @@ Supabase Authentication → URL Configuration에 `https://fobesseo1.github.io/li
 - `lineestate-public`: 승인 시 복사한 공개 사진.
 
 공개 사이트는 저장소에서 승인 자료를 읽으므로 등록 때마다 Git 재배포가 필요하지 않다. 중개 사례는 기존 4개를 포함해 모두 lineestate 데이터 저장소에서 조회한다. 관리자에서 내용·사진 수정 후 승인하면 홈·사례 목록·상세에 반영되고 Git·Vercel 재배포는 필요 없다. 기존 #work/pyeonbaek·salon·comma·clinic 주소는 lib/content/legacy-work-routes.json의 매물번호로 연결한다. 이 파일은 주소 연결 정보만 담고 사례 내용을 담지 않는다. 사례 내용을 lib/real-cases.json 또는 프런트엔드 코드에서 수정하지 않는다. 원본 사진은 추가 보관하지 않고 관리자 업로드는 lib/content/photo.ts, 채팅·이전은 lib/content/photo-node.mjs를 통해 긴 변 정확히 1200px의 WebP만 저장한다. 기존 역사 원본 삭제는 사용자에게 범위 승인을 받은 뒤에만 수행한다.
+
+## 입점 기록
+
+관리자 `입점 기록` 탭에서 계약 연월·상호·업종·거래 유형·네이버 지도 링크를 한 줄씩 관리한다. 네이버 `naver.me` 공유 링크를 넣으면 저장 시 전체 지도 링크로 바뀐다. 상세 중개 사례가 있는 매장은 SUN 번호를 적어 연결한다. 공개 화면 `/works#records`와 홈 숫자에 30초 안에 반영된다. 데이터는 `lineestate_deal_records` 테이블에 있다.

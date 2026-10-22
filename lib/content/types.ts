@@ -23,3 +23,6 @@ export function cleanContent(input:Partial<Content>):Content {
  for(const key of ["area","contractArea","deposit","rent","salePrice","premium","management"] as const) if(result[key]!==""&&(!Number.isFinite(Number(result[key]))||Number(result[key])<0))throw Error("금액·면적은 0 이상의 숫자로 입력해 주세요. 미확인 항목은 비워둘 수 있습니다.");
  return result;
 }
+/** One brokered contract in the yearly record (lineestate_deal_records). */
+export type DealRecord = {id:string;contracted_month:string;name:string;industry:string;deal_type:"lease"|"sale"|"transfer";map_url:string;case_number:string;sort_order:number;visible:boolean};
+export const dealTypeLabel = {lease:"임대차",sale:"매매",transfer:"양도양수"};

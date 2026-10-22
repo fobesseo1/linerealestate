@@ -1,6 +1,6 @@
 import {createClient} from "@supabase/supabase-js";
 import config from "./public-config.json";
-import type {Publication} from "./types";
+import type {DealRecord,Publication} from "./types";
 
 // Published content is public; cache each read for 30 seconds so pages stay fast and fresh.
 const db=config.url&&config.publishableKey?createClient(config.url,config.publishableKey,{
@@ -13,5 +13,13 @@ export async function getPublications():Promise<Publication[]|null>{
  if(!db)return [];
  const {data,error}=await db.from("lineestate_published").select("*").in("status",["active","completed"]).order("published_at",{ascending:false});
  if(error){console.error("lineestate_published read failed",error.message);return null;}
+ return data||[];
+}
+
+/** Visible contract records, newest month first. `null` means the read failed. */
+export async function getDealRecords():Promise<DealRecord[]|null>{
+ if(!db)return [];
+ const {data,error}=await db.from("lineestate_deal_records").select("*").order("contracted_month",{ascending:false}).order("sort_order",{ascending:false});
+ if(error){console.error("lineestate_deal_records read failed",error.message);return null;}
  return data||[];
 }
