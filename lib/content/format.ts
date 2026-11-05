@@ -11,7 +11,14 @@ export function price(value:string){
 
 export const floorLabel=(c:Content)=>c.floor?`${c.floor}${c.floor.endsWith("층")?"":"층"}`:"";
 export const pyeong=(area:string)=>(Number(area)/3.3058).toFixed(1);
-export const placeLabel=(c:Content)=>c.showMap?c.address:"군포·산본 · 상세 위치 상담";
+/** Public location. Hidden addresses fall back to the 읍·면·동 entered for the listing (고시 제6조제1호다목). */
+export const placeLabel=(c:Content)=>c.showMap&&c.address?c.address:c.locality||"군포·산본 · 상세 위치 상담";
+/** 거래 형태 as the 고시 requires: 임대차 is split into 월세 and 전세. */
+export const dealForm=(c:Content)=>c.kind==="sale"?"매매":c.rent===""?"임대차":Number(c.rent)>0?"임대차(월세)":"임대차(전세)";
+/** 중개대상물 종류: 건축물 용도, plus 위반건축물·미등기건물 when recorded. */
+export const objectType=(c:Content)=>[c.usage,c.buildingStatus].filter(Boolean).join(" · ")||"미확인";
+/** "3층 / 총 8층" */
+export const floorsLabel=(c:Content)=>`${floorLabel(c)||"미확인"} / 총 ${c.totalFloors?`${c.totalFloors.replace(/층$/,"")}층`:"미확인"}`;
 export const isWork=(item:Publication)=>item.content.kind==="work";
 export const detailHref=(item:Publication)=>`/${isWork(item)?"works":"property"}/${item.number}`;
 

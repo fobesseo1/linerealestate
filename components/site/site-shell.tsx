@@ -38,12 +38,22 @@ function ShellDialogs(){
 function SiteFooter(){
  return <footer className="bg-ink py-9 text-white">
   <div className="page flex items-center gap-9 border-b border-white/12 pb-6 max-md:flex-wrap max-md:gap-5">
-   <img src="/logo-white.svg" alt="선부동산" className="h-12 w-44 object-contain opacity-85 max-md:w-30"/>
+   <img src="/logo-white.svg" alt={site.registeredName}className="h-12 w-44 object-contain opacity-85 max-md:w-30"/>
    <div className="flex flex-col gap-2 max-md:min-w-40 max-md:flex-1"><strong className="text-xs font-medium">산본의 자리와 사람을 연결합니다.</strong><span className="text-tiny text-gray-400">상가 임대차 · 상가 매매 · 입점 조건 협의</span></div>
    <a href={site.mobileHref} className="ml-auto flex items-center gap-3 text-[22px] font-demibold max-md:ml-0 max-md:text-xl">{site.mobile}<Phone size={18}/></a>
   </div>
-  <div className="page flex justify-between pt-6 text-tiny leading-loose text-gray-400 max-md:flex-col max-md:gap-4 max-md:leading-[1.9]">
-   <p>선 공인중개사 · 공인중개사 {site.agent}<br/>{site.address}<br/>사무실 {site.office} · 이메일 {site.email}</p>
+  <div className="page flex justify-between gap-8 pt-6 text-tiny leading-loose text-gray-400 max-md:flex-col max-md:gap-4 max-md:leading-[1.9]">
+   {/* Required office facts for every listing advertisement (공인중개사법 시행령 제17조의2제1항). Keep them as plain readable text. */}
+   <dl aria-label="중개사무소 정보" className="grid grid-cols-[auto_1fr] gap-x-3 [overflow-wrap:anywhere]">
+    <dt>상호</dt><dd className="text-gray-200">{site.registeredName}</dd>
+    <dt>대표</dt><dd className="text-gray-200">개업공인중개사 {site.agent}</dd>
+    <dt>등록번호</dt><dd className="text-gray-200">{site.registrationNumber}</dd>
+    <dt>소재지</dt><dd className="text-gray-200">{site.address}</dd>
+    <dt>전화</dt><dd className="text-gray-200"><a href={site.officeHref}>{site.office}</a> · <a href={site.mobileHref}>{site.mobile}</a></dd>
+    <dt>사업자번호</dt><dd>{site.businessNumber}</dd>
+    <dt>영업시간</dt><dd>{site.hoursText}</dd>
+    <dt>이메일</dt><dd>{site.email}</dd>
+   </dl>
    <p className="text-right max-md:text-left"><a href="/admin/">관리자</a><br/>LINE REAL ESTATE<br/>점포 비용 비교는 가정에 따른 예시입니다.<br/>실제 중개 사례의 금액은 거래 당시 조건입니다.</p>
   </div>
  </footer>;

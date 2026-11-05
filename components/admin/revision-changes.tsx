@@ -1,6 +1,6 @@
 import {kindLabel,type Content} from "@/lib/content/types";
 
-const labels:Partial<Record<keyof Content,string>>={kind:"분류",title:"제목",industry:"검토 업종",address:"주소",building:"건물·상호·호수",floor:"층",totalFloors:"전체 층",area:"전용면적",contractArea:"계약면적",deposit:"보증금",rent:"월세",salePrice:"매매가",premium:"권리금",management:"관리비",vat:"부가세",usage:"건축물 용도",approvedDate:"사용승인일",parking:"주차",direction:"방향",available:"입주 일정",description:"상세 설명",initial:"고객의 출발점",issue:"해결할 문제",actions:"협의 내용",outcome:"결과",facilities:"시설",showMap:"주소·지도 공개"};
+const labels:Partial<Record<keyof Content,string>>={kind:"분류",title:"제목",industry:"검토 업종",address:"주소",building:"건물·상호·호수",floor:"층",totalFloors:"전체 층",area:"전용면적",contractArea:"계약면적",deposit:"보증금",rent:"월세",salePrice:"매매가",premium:"권리금",management:"관리비",vat:"부가세",usage:"건축물 용도",buildingStatus:"건축물 상태",restrooms:"화장실 수",locality:"공개 소재지",approvedDate:"사용승인일",parking:"주차",direction:"방향",available:"입주 일정",description:"상세 설명",initial:"고객의 출발점",issue:"해결할 문제",actions:"협의 내용",outcome:"결과",facilities:"시설",showMap:"주소·지도 공개"};
 function value(content:Content,key:keyof Content){
  if(key==="kind")return kindLabel[content.kind];
  if(key==="showMap")return content.showMap?"공개":"비공개";

@@ -8,7 +8,7 @@ import {Card,CardTitle} from "@/components/ui/card";
 import {InquiryForm,type InquiryContext} from "@/components/inquiry/inquiry-form";
 import {usePageInquiry} from "@/components/site/site-context";
 import {kindLabel,type Publication} from "@/lib/content/types";
-import {price,pyeong} from "@/lib/content/format";
+import {dealForm,floorLabel,floorsLabel,objectType,placeLabel,price,pyeong} from "@/lib/content/format";
 import {site} from "@/lib/site";
 import {PropertyGallery} from "./property-gallery";
 import {PhotoPlaceholder} from "./listing-card";
@@ -21,12 +21,15 @@ export function PropertyDetail({item}:{item:Publication}){
  usePageInquiry(inquiry);
  const [inquiryOpen,setInquiryOpen]=useState(false);
  const status=work?"실제 중개 완료 사례 · 현재 모집 아님":item.status==="completed"?"거래 완료":kindLabel[c.kind];
+ // Every item the 고시 「중개대상물의 표시·광고 명시사항 세부기준」 제6조 asks of an internet listing ad, in its order. Blanks read 미확인.
  const facts:[string,string][]=[
-  ["거래 유형",kindLabel[c.kind]],
+  ["거래 형태",dealForm(c)],
   ...(c.kind==="sale"?[["매매가",price(c.salePrice)] as [string,string]]:[["보증금",price(c.deposit)],["월세",price(c.rent)]] as [string,string][]),
+  ["소재지",placeLabel(c)],
   ["전용면적",c.area?`${c.area}㎡ · 약 ${pyeong(c.area)}평`:"미확인"],
-  ["층",c.floor||"미확인"],["권리금",price(c.premium)],["관리비",price(c.management)],["부가세",c.vat||"미확인"],
-  ["입주 가능일",c.available||"미확인"],["주차",c.parking||"미확인"],["건축물 용도",c.usage||"미확인"],["사용승인일",c.approvedDate||"미확인"],
+  ["층수",floorsLabel(c)],["중개대상물 종류",objectType(c)],["사용승인일",c.approvedDate||"미확인"],
+  ["방향",c.direction||"미확인"],["주차대수",c.parking||"미확인"],["화장실 수",c.restrooms||"미확인"],["입주 가능일",c.available||"미확인"],
+  ["관리비",price(c.management)],["권리금",price(c.premium)],["부가세",c.vat||"미확인"],
  ];
  const story:[string,string][]=work?[["고객의 출발점",c.initial],["해결할 문제",c.issue],["협의하고 도운 일",c.actions],["결과·이후 관계",c.outcome]]:[];
  return <div className="page pb-15 pt-8">
@@ -35,7 +38,7 @@ export function PropertyDetail({item}:{item:Publication}){
    <div>
     <div className="mb-3 flex items-center gap-3 text-tiny text-gray-500"><Badge className="font-medium">{status}</Badge><span>{item.number}</span></div>
     <h1 className="mb-3 text-[clamp(28px,3.1vw,44px)] font-heavy leading-[1.3] tracking-[-0.045em]">{c.title}</h1>
-    <p className="flex items-center gap-1 text-sm text-gray-600">{c.showMap?c.address:"군포·산본 · 상세 위치 상담"}</p>
+    <p className="flex items-center gap-1 text-sm text-gray-600">{[placeLabel(c),floorLabel(c)].filter(Boolean).join(" · ")}</p>
    </div>
   </div>
   <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-10 max-lg:grid-cols-[minmax(0,1fr)_280px] max-lg:gap-6 max-md:grid-cols-1 max-md:gap-0">
@@ -65,6 +68,16 @@ export function PropertyDetail({item}:{item:Publication}){
      {inquiryOpen&&<InquiryForm variant="sidebar" context={inquiry}/>}
     </div>
     <Card className="p-6">
+     <h3 className="mb-2 text-xs font-semibold">중개사무소</h3>
+     <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-caption leading-[1.7] text-gray-600 [overflow-wrap:anywhere]">
+      <dt className="text-gray-400">상호</dt><dd>{site.registeredName}</dd>
+      <dt className="text-gray-400">대표</dt><dd>개업공인중개사 {site.agent}</dd>
+      <dt className="text-gray-400">등록번호</dt><dd>{site.registrationNumber}</dd>
+      <dt className="text-gray-400">소재지</dt><dd>{site.address}</dd>
+      <dt className="text-gray-400">전화</dt><dd>{site.office} · {site.mobile}</dd>
+     </dl>
+    </Card>
+    <Card className="mt-3 p-6">
      <h3 className="mb-2 text-xs font-semibold">정보 확인 안내</h3>
      <p className="text-caption leading-[1.8] text-gray-500">미입력 항목은 미확인으로 표시합니다. 거래 조건과 시설은 상담·현장 확인 시 함께 살펴봅니다.</p>
     </Card>
