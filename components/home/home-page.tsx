@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import {useEffect,useState,type CSSProperties,type ReactNode} from "react";
-import {ArrowLeft,ArrowRight,ArrowUpRight,Building2,MapPin,Phone} from "lucide-react";
+import {useEffect,useRef,useState,type CSSProperties,type ReactNode} from "react";
+import {ArrowRight,ArrowUpRight,Building2,MapPin,Phone} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {useSite} from "@/components/site/site-context";
@@ -10,6 +10,7 @@ import {usePublications} from "@/lib/content/use-publications";
 import {kindLabel,type DealRecord,type Publication} from "@/lib/content/types";
 import {detailHref,isGroundFloor,noPremium,placeLabel,price} from "@/lib/content/format";
 import {CompactListingCard} from "@/components/listings/listing-card";
+import {Arrow} from "@/components/listings/property-gallery";
 import {site} from "@/lib/site";
 import {cn} from "@/lib/utils";
 import {Companion} from "./companion";
@@ -21,6 +22,7 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
  const {openContact,favorites,toggleFavorite}=useSite();
  const moving=useSiteMotion();
  const [slide,setSlide]=useState(0);
+ const [paused,setPaused]=useState(false);
  const listings=items.filter(item=>item.content.kind!=="work"&&item.status==="active");
  const works=items.filter(item=>item.content.kind==="work");
  const featured=listings[slide%Math.max(listings.length,1)];
@@ -34,11 +36,12 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
   ["무권리",listings.filter(i=>noPremium(i.content)).length,"/listings?premium=0"],
   ["월세 150만원 이하",lease.filter(i=>i.content.rent!==""&&Number(i.content.rent)<=150).length,"/listings?type=lease&rent=150"],
  ];
+ // One featured listing every 3 seconds. Keyed on `slide`, so a manual move restarts the count; hover or focus pauses it.
  useEffect(()=>{
-  if(!moving||listings.length<2)return;
-  const timer=setInterval(()=>{if(!document.hidden)setSlide(s=>(s+1)%listings.length);},1800);
-  return()=>clearInterval(timer);
- },[moving,listings.length]);
+  if(!moving||paused||listings.length<2)return;
+  const timer=setTimeout(()=>{if(!document.hidden)setSlide(s=>(s+1)%listings.length);},3000);
+  return()=>clearTimeout(timer);
+ },[moving,paused,slide,listings.length]);
 
  return <div className="min-h-screen bg-background text-ink">
   <div className="flex items-center gap-4 bg-brand px-gutter py-3 text-white">
@@ -57,7 +60,7 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
      {[[listings.length,"공개 중인 매물"],[since?`${since}~`:works.length,since?"산본 입점 중개":"등록된 중개 사례"],["산본","상가 전문"]].map(([value,label])=><span key={label} className="flex flex-col gap-2 text-tiny text-gray-600"><b className="text-2xl font-semibold text-white">{value}</b>{label}</span>)}
     </div>
    </div>
-   {featured?<Featured item={featured} count={listings.length} index={slide%listings.length} onMove={step=>setSlide(s=>(s+step+listings.length)%listings.length)}/>
+   {featured?<Featured item={featured} count={listings.length} index={slide%listings.length} onMove={step=>setSlide(s=>(s+step+listings.length)%listings.length)} onPause={setPaused}/>
     :<div role="status" className="rounded-sm bg-ink-raised px-8 py-24 text-center text-gray-400">{failed?"매물을 불러오지 못했습니다. 새로고침해 주세요.":"공개 중인 매물이 없습니다."}</div>}
    <nav aria-label="조건별 매물 바로가기" className="relative z-1 col-span-full mt-4 grid grid-cols-6 gap-3 max-lg:grid-cols-3 max-md:mt-0 max-md:gap-2">
     {shortcuts.map(([label,count,href],i)=><Link key={label} href={href} className={cn("group relative flex flex-col gap-1 border border-ink-line bg-ink-raised p-4 text-white transition-colors hover:border-brand max-md:p-3",i===0&&"border-l-4 border-l-brand")}>
@@ -115,13 +118,23 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
  </div>;
 }
 
-function Featured({item,count,index,onMove}:{item:Publication;count:number;index:number;onMove:(step:number)=>void}){
- const href=detailHref(item);
- return <div className="relative min-w-0 overflow-hidden border-2 border-brand bg-white text-ink shadow-[8px_8px_0_#e00b4130] max-md:mr-2">
-  <div key={item.id} className="relative aspect-[1.9/1] animate-swipe overflow-hidden max-md:aspect-[1.65/1]">
-   <Photo item={item} className="absolute inset-0 animate-punch"/>
-   <Badge className="absolute left-5 top-5 px-3 py-2 font-demibold">{kindLabel[item.content.kind]} · {item.number}</Badge>
-   <Link href={href} className="absolute inset-0" aria-label={`${item.content.title} 상세 보기`}/>
+/** Featured listing: the photo and its facts change together. ‹ › buttons, centred on the whole card and straddling its border, and touch swipes move it; hover or focus pauses the rotation. */
+function Featured({item,count,index,onMove,onPause}:{item:Publication;count:number;index:number;onMove:(step:number)=>void;onPause:(paused:boolean)=>void}){
+ const href=detailHref(item),multiple=count>1;
+ const start=useRef<{x:number;y:number}|null>(null);
+ return <div className="relative min-w-0 max-md:mr-2"
+  onPointerEnter={event=>{if(event.pointerType==="mouse")onPause(true);}} onPointerLeave={event=>{if(event.pointerType==="mouse")onPause(false);}}
+  onFocus={()=>onPause(true)} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))onPause(false);}}>
+ <div className="overflow-hidden border-2 border-brand bg-white text-ink shadow-[8px_8px_0_#e00b4130]">
+  <div className="relative touch-pan-y"
+   onPointerDown={event=>{if(event.pointerType==="touch")start.current={x:event.clientX,y:event.clientY};}}
+   onPointerUp={event=>{const origin=start.current;start.current=null;if(!origin||!multiple)return;const dx=event.clientX-origin.x,dy=event.clientY-origin.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)onMove(dx<0?1:-1);}}
+   onPointerCancel={()=>{start.current=null;}}>
+   <div key={item.id} className="relative aspect-[1.9/1] animate-swipe overflow-hidden max-md:aspect-[1.65/1]">
+    <Photo item={item} className="absolute inset-0 animate-punch"/>
+    <Badge className="absolute left-5 top-5 px-3 py-2 font-demibold">{kindLabel[item.content.kind]} · {item.number}</Badge>
+    <Link href={href} draggable={false} className="absolute inset-0" aria-label={`${item.content.title} 상세 보기`}/>
+   </div>
   </div>
   <div key={`info-${item.id}`} className="animate-hit px-5 pb-3 pt-3 max-md:px-4">
    <span className="flex items-center gap-1 text-caption text-gray-600"><MapPin size={14}/>{placeLabel(item.content)}</span>
@@ -129,13 +142,15 @@ function Featured({item,count,index,onMove}:{item:Publication;count:number;index
    <Money item={item} className="my-2" size="text-[22px] max-md:text-lg"/>
    <div className="mt-2 flex items-center justify-between pt-2">
     <Link href={href} className="flex items-center gap-2 text-xs">매물 자세히 <ArrowUpRight size={16}/></Link>
-    <div className="flex items-center gap-3">
-     <button aria-label="이전 매물" disabled={count<2} onClick={()=>onMove(-1)} className="grid size-8 place-items-center rounded-full border border-gray-200 disabled:opacity-35"><ArrowLeft size={18}/></button>
-     <span className="text-tiny text-gray-500">{index+1} / {count}</span>
-     <button aria-label="다음 매물" disabled={count<2} onClick={()=>onMove(1)} className="grid size-8 place-items-center rounded-full border border-gray-200 disabled:opacity-35"><ArrowRight size={18}/></button>
-    </div>
+    <span className="text-tiny text-gray-500">{index+1} / {count}</span>
    </div>
   </div>
+ </div>
+ {/* Arrow frame: the whole card on desktop (arrows at its vertical middle); on phones the photo only, inset by the 2px border, so each arrow's centre sits on the photo's bottom corner. */}
+ {multiple&&<div className="pointer-events-none absolute inset-x-0.5 top-0.5 aspect-[1.65/1] md:inset-0 md:aspect-auto">
+  <Arrow compact direction="previous" label="이전 매물" onClick={()=>onMove(-1)} className="pointer-events-auto left-0 -translate-x-1/2 max-md:top-full"/>
+  <Arrow compact direction="next" label="다음 매물" onClick={()=>onMove(1)} className="pointer-events-auto right-0 translate-x-1/2 max-md:top-full"/>
+ </div>}
  </div>;
 }
 

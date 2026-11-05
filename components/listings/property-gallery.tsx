@@ -39,12 +39,14 @@ export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
  </section>;
 }
 
-function Arrow({direction,onClick}:{direction:"previous"|"next";onClick:()=>void}){
+/** Round red-triangle arrow shared by the listing gallery and the home hero. `className` sets its horizontal position; `compact` shrinks it to about two-thirds on phones. */
+export function Arrow({direction,onClick,label,className,compact}:{direction:"previous"|"next";onClick:()=>void;label?:string;className?:string;compact?:boolean}){
  const previous=direction==="previous";
- return <button type="button" aria-label={previous?"이전 사진":"다음 사진"} onClick={onClick} className={cn(
+ return <button type="button" aria-label={label??(previous?"이전 사진":"다음 사진")} onClick={onClick} className={cn(
   "group absolute top-1/2 z-2 grid size-14 -translate-y-1/2 place-items-center rounded-full border border-brand/20 bg-white/95 text-brand shadow-[0_4px_16px_#19191f18] transition-[background-color,color,box-shadow,scale] duration-200 hover:scale-108 hover:bg-brand hover:text-white hover:shadow-[0_0_0_8px_#e00b4114,0_6px_20px_#e00b4140] focus-visible:outline-3 focus-visible:outline-ink active:scale-94 max-md:size-11",
-  previous?"left-[14%] max-md:left-3":"right-[14%] max-md:right-3",
+  className??(previous?"left-[14%] max-md:left-3":"right-[14%] max-md:right-3"),
+  compact&&"max-md:size-7",
  )}>
-  <span aria-hidden="true" className={cn("block size-0 border-y-10 border-y-transparent group-hover:animate-arrow-nudge",previous?"-ml-1 border-r-[15px] border-r-current group-hover:[animation-direction:reverse]":"ml-1 border-l-[15px] border-l-current")}/>
+  <span aria-hidden="true" className={cn("block size-0 border-y-10 border-y-transparent group-hover:animate-arrow-nudge",previous?"-ml-1 border-r-[15px] border-r-current group-hover:[animation-direction:reverse]":"ml-1 border-l-[15px] border-l-current",compact&&(previous?"max-md:border-y-6 max-md:border-r-9":"max-md:border-y-6 max-md:border-l-9"))}/>
  </button>;
 }
