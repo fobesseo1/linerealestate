@@ -72,7 +72,8 @@ export function LabMap({center, radius, points, polygons = [], zoom = 17, onSele
   }
 
   return <div className={`relative bg-gray-50 ${className ?? "aspect-[4/3] w-full"}`}>
-    <div ref={box} className={`absolute inset-0 ${error ? "invisible" : ""}`}/>
+    {/* The SDK rewrites this box to position:relative, so it needs its own full height. */}
+    <div ref={box} className={`absolute inset-0 h-full w-full ${error ? "invisible" : ""}`}/>
     {error ? <FallbackPlot center={center} radius={radius} span={span} points={points} polygons={polygons} onSelect={onSelect} reason={error}/>
       : !ready && <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-body text-gray-700" role="status">네이버 지도를 불러오는 중입니다…</p>}
     <Script id="naver-maps-sdk" src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(clientId)}`} strategy="afterInteractive"
