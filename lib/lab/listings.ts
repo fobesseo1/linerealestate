@@ -28,3 +28,8 @@ const KEYWORDS: [RegExp, string][] = [
 export function guessCategory(industry: string) {
   return KEYWORDS.find(([re]) => re.test(industry))?.[1];
 }
+
+/** Picks the 소분류 name that the listing's industry text mentions, else the most common one. */
+export function pickSmall(industry: string, names: string[]) {
+  return names.find(n => n.split("/").some(part => part.length > 1 && industry.includes(part.replace(/(실|숍|점|업)$/, "")))) ?? names[0];
+}

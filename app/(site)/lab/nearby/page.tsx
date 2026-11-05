@@ -1,6 +1,8 @@
 import {Bar, LabHeader, ListingPicker, Panel, SourceNote} from "@/components/lab/lab-ui";
+import {Sbiz365Button} from "@/components/lab/sbiz365";
+import {sbiz365Hint, sbiz365Key} from "@/lib/lab/sbiz365";
 import {NativeSelect} from "@/components/ui/native-select";
-import {guessCategory, labListings, param} from "@/lib/lab/listings";
+import {guessCategory, labListings, param, pickSmall} from "@/lib/lab/listings";
 import {countBy, formatBaseMonth, gunpoStores, within} from "@/lib/lab/store-data";
 
 export const metadata = {title: "주변 업종 현황"};
@@ -20,6 +22,7 @@ export default async function Page({searchParams}: PageProps<"/lab/nearby">) {
   const sameBy = (r: number) => within(data.items, listing, r).filter(s => s.mc === cat);
   const same = near.filter(s => s.mc === cat);
   const sameSmall = countBy(same, s => s.scn);
+  const hint = await sbiz365Hint(listing);
 
   return <>
     <LabHeader no={1} title="이 점포 주변 업종 현황">매물 좌표를 중심으로 반경 안에 등록된 점포를 업종별로 셉니다. 실제 서비스에서는 매물 상세 페이지의 지도 아래에 카드로 들어가는 형태를 가정했습니다.</LabHeader>
@@ -38,6 +41,7 @@ export default async function Page({searchParams}: PageProps<"/lab/nearby">) {
         </div>)}
       </div>
       <p className="mt-4 text-body text-gray-400">같은 업종({catName}) 경쟁 점포는 반경 {radius}m 안에 <strong className="text-white">{same.length}곳</strong>입니다.</p>
+      <Sbiz365Button certKey={sbiz365Key()} {...hint} category={pickSmall(listing.industry, sameSmall.map(r => r.name)) ?? catName} className="mt-4 border-ink-line bg-ink-raised text-white hover:bg-ink-line"/>
     </section>
 
     <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">

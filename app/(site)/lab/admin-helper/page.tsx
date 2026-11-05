@@ -2,6 +2,8 @@ import Link from "next/link";
 import {LabHeader, Panel, SourceNote} from "@/components/lab/lab-ui";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import {Sbiz365Button} from "@/components/lab/sbiz365";
+import {sbiz365Key} from "@/lib/lab/sbiz365";
 import {param} from "@/lib/lab/listings";
 import {countBy, formatBaseMonth, gunpoStores, gunpoZones, insideZone, within} from "@/lib/lab/store-data";
 
@@ -23,7 +25,7 @@ export default async function Page({searchParams}: PageProps<"/lab/admin-helper"
   const hits = q ? data.items.filter(s => matches(s.jibun, q) || matches(s.road, q)) : [];
   const centre = hits.length ? {latitude: hits.reduce((a, s) => a + s.lat, 0) / hits.length, longitude: hits.reduce((a, s) => a + s.lon, 0) / hits.length} : null;
 
-  let draft = "", facts: [string, string][] = [];
+  let draft = "", facts: [string, string][] = [], hint: {dong?: string; zone?: string} = {};
   if (centre) {
     const first = hits[0];
     const zone = zones.items.find(z => insideZone(z, centre.latitude, centre.longitude));
@@ -31,6 +33,7 @@ export default async function Page({searchParams}: PageProps<"/lab/admin-helper"
     const top = countBy(near, s => s.mcn).slice(0, 3);
     const inBuilding = countBy(hits, s => s.mcn).slice(0, 3);
     const floors = countBy(hits.filter(s => s.floor), s => s.floor).sort((a, b) => Number(a.name) - Number(b.name));
+    hint = {dong: first.dong, zone: zone?.name};
     const building = first.building || "건물명 미등록";
     facts = [
       ["행정동", first.dong], ["지번 주소", first.jibun], ["도로명 주소", first.road], ["건물명", building],
@@ -67,6 +70,7 @@ export default async function Page({searchParams}: PageProps<"/lab/admin-helper"
       </Panel>
       <Panel title="입지 설명 초안">
         <textarea readOnly defaultValue={draft} key={draft} rows={5} className="w-full border border-input bg-gray-50 p-3 text-sm leading-[1.8]"/>
+        <div className="mt-3"><Sbiz365Button certKey={sbiz365Key()} {...hint} label="입지 설명 쓰기 전에 365 매출 확인"/></div>
         <p className="mt-2 text-caption text-gray-800">사실 숫자만 넣은 초안입니다. 유동인구·매출 같은 표현은 넣지 않았습니다. 저장 전에 직접 확인해 주세요.</p>
       </Panel>
     </div>}

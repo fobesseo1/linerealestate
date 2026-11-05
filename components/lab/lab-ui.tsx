@@ -9,6 +9,7 @@ export const LABS = [
   {slug: "nearby", no: 1, title: "이 점포 주변 업종 현황", text: "매물 반경 300m·500m 안 업종별 점포 수와 같은 업종 경쟁 점포 수"},
   {slug: "store-map", no: 2, title: "지도 위 경쟁 점포 핀", text: "업종을 고르면 주변 점포가 지도에 핀으로 표시"},
   {slug: "gaps", no: 3, title: "주변에 적은 업종", text: "군포시 전체 비중과 비교해 이 반경에 적은 업종을 숫자로 표시"},
+  {slug: "sales365", no: 4, title: "이 지역 매출 보기 (소상공인365)", text: "매물 주변 점포 수 옆에 365 간단분석 화면을 붙이고 어떤 지역·업종을 고를지 안내"},
   {slug: "zones", no: 5, title: "상권 경계와 매물", text: "공단 발달상권 경계를 그리고 매물이 상권 안인지 표시"},
   {slug: "overview", no: 6, title: "산본 상권 한눈에", text: "군포시·행정동별 업종 TOP 10과 업종 비중"},
   {slug: "case-context", no: 9, title: "완료 사례의 주변 상권", text: "중개 완료 사례 주변의 같은 업종 점포 수"},

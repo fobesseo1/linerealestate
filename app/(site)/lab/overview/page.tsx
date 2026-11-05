@@ -1,9 +1,10 @@
-import {readdir} from "node:fs/promises";
 import {Bar, LabHeader, Panel, SourceNote} from "@/components/lab/lab-ui";
+import {Sbiz365Button} from "@/components/lab/sbiz365";
+import {sbiz365Key} from "@/lib/lab/sbiz365";
 import {Button} from "@/components/ui/button";
 import {NativeSelect} from "@/components/ui/native-select";
 import {param} from "@/lib/lab/listings";
-import {CACHE_DIR, countBy, formatBaseMonth, gunpoStores, gunpoZones, insideZone, type Store} from "@/lib/lab/store-data";
+import {countBy, formatBaseMonth, gunpoStores, gunpoZones, insideZone, type Store} from "@/lib/lab/store-data";
 
 export const metadata = {title: "산본 상권 한눈에"};
 
@@ -21,8 +22,6 @@ export default async function Page({searchParams}: PageProps<"/lab/overview">) {
   const large = countBy(rows, s => s.lcn);
   const middle = countBy(rows, s => s.mcn).slice(0, 10);
   const small = countBy(rows, s => s.scn).slice(0, 10);
-  const snapshots = (await readdir(CACHE_DIR).catch(() => [] as string[]))
-    .map(f => f.match(/^stores-\d+\.(\d{6})\.json$/)?.[1]).filter(Boolean) as string[];
 
   return <>
     <LabHeader no={6} title="산본 상권 한눈에">홈이나 별도 &lsquo;산본 상권 정보&rsquo; 페이지에 넣는 지역 콘텐츠를 가정했습니다. 지역을 고르면 업종 구성과 많은 업종 TOP 10이 바뀝니다.</LabHeader>
@@ -42,6 +41,7 @@ export default async function Page({searchParams}: PageProps<"/lab/overview">) {
       <div><span className="text-caption text-gray-400">가장 많은 업종</span><strong className="mt-1 block text-2xl">{small[0]?.name ?? "-"}</strong></div>
       <div><span className="text-caption text-gray-400">음식점 비중</span><strong className="mt-1 block text-2xl">{rows.length ? Math.round(((large.find(l => l.name === "음식")?.count ?? 0) / rows.length) * 100) : 0}%</strong></div>
     </section>
+    <div className="mb-6"><Sbiz365Button certKey={sbiz365Key()} dong={area.startsWith("dong:") ? areaName : undefined} zone={area.startsWith("zone:") ? areaName.replace(/ 상권$/, "") : undefined} category={small[0]?.name} label={`${areaName} 매출을 365에서 보기`}/></div>
 
     <Panel title="업종 구성 (대분류 비중)" className="mb-4">
       <div className="flex h-8 w-full overflow-hidden">
@@ -56,8 +56,8 @@ export default async function Page({searchParams}: PageProps<"/lab/overview">) {
       <Panel title="많은 업종 TOP 10 (소분류)">{small.map(r => <Bar key={r.name} label={r.name} value={r.count} max={small[0].count}/>)}</Panel>
       <Panel title="군포시 행정동별 점포 수">{dongs.map(r => <Bar key={r.name} label={r.name} value={r.count} max={dongs[0].count} strong={areaName === r.name}/>)}</Panel>
       <Panel title="분기별 추이">
-        <p className="text-body leading-[1.7] text-gray-800">공단 자료는 분기마다 갱신됩니다. 이 테스트는 받은 자료를 기준월별로 따로 저장해 두므로, 다음 갱신 뒤부터 &lsquo;지난 분기 대비 카페 +3곳&rsquo; 같은 추이를 보여 줄 수 있습니다.</p>
-        <p className="mt-3 text-body">저장된 기준월: <strong>{snapshots.map(formatBaseMonth).join(", ") || "없음"}</strong></p>
+        <p className="text-body leading-[1.7] text-gray-800">공단 자료는 분기마다 갱신됩니다. 지금은 한 분기 자료만 있습니다. 다음 갱신 때 지난 분기 스냅샷을 함께 보관하면 &lsquo;지난 분기 대비 카페 +3곳&rsquo; 같은 추이를 보여 줄 수 있습니다.</p>
+        <p className="mt-3 text-body">보관된 기준월: <strong>{formatBaseMonth(data.baseMonth)}</strong></p>
       </Panel>
     </div>
     <SourceNote baseMonth={formatBaseMonth(data.baseMonth)}/>

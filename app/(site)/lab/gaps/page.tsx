@@ -1,4 +1,6 @@
 import {LabHeader, ListingPicker, Panel, SourceNote} from "@/components/lab/lab-ui";
+import {Sbiz365Button} from "@/components/lab/sbiz365";
+import {sbiz365Hint, sbiz365Key} from "@/lib/lab/sbiz365";
 import {labListings, param} from "@/lib/lab/listings";
 import {countBy, formatBaseMonth, gunpoStores, within} from "@/lib/lab/store-data";
 
@@ -25,6 +27,7 @@ export default async function Page({searchParams}: PageProps<"/lab/gaps">) {
   }).filter(r => r.expected >= 2);
   const fewer = [...rows].sort((a, b) => a.ratio - b.ratio).slice(0, 15);
   const more = [...rows].sort((a, b) => b.ratio - a.ratio).slice(0, 10);
+  const hint = await sbiz365Hint(listing);
   const per100 = (count: number, total: number) => ((count / total) * 100).toFixed(1);
 
   const Table = ({rows, tone}: {rows: Row[]; tone: "low" | "high"}) => <div className="overflow-x-auto">
@@ -42,7 +45,8 @@ export default async function Page({searchParams}: PageProps<"/lab/gaps">) {
   return <>
     <LabHeader no={3} title="주변에 적은 업종">군포시 전체 업종 비중과 비교해, 이 매물 반경 안에서 상대적으로 적거나 많은 업종을 숫자로 보여 줍니다. &ldquo;유망하다&rdquo;는 판단은 하지 않고 비교 숫자만 표시합니다.</LabHeader>
     <ListingPicker listings={listings} selected={listing.number} radius={radius} radii={[300, 500]}/>
-    <p className="mb-4 text-sm text-gray-900">{listing.number} 반경 {radius}m 안 등록 점포 <strong>{near.length.toLocaleString()}곳</strong> · 군포시 전체 {data.items.length.toLocaleString()}곳</p>
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-gray-900">{listing.number} 반경 {radius}m 안 등록 점포 <strong>{near.length.toLocaleString()}곳</strong> · 군포시 전체 {data.items.length.toLocaleString()}곳</p>
+      <Sbiz365Button certKey={sbiz365Key()} {...hint} label="적은 업종의 지역 매출을 365에서 보기"/></div>
     <div className="grid gap-4">
       <Panel title="군포시 비중보다 적은 업종">
         <p className="mb-3 text-caption text-gray-800">예: 군포시 전체에서 100곳 중 2곳이 이 업종이면, 이 반경 점포 수에 같은 비율을 곱한 값이 &lsquo;군포시 비중이면&rsquo;입니다. 군포시 20곳 이상 업종만 비교했고, 사무실형(전문·기술 서비스, 부동산, 시설관리)과 자동차 관련 업종은 뺐습니다.</p>
