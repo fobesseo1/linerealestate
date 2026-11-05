@@ -21,14 +21,14 @@ export function PropertyDetail({item}:{item:Publication}){
  usePageInquiry(inquiry);
  const [inquiryOpen,setInquiryOpen]=useState(false);
  const status=work?"실제 중개 완료 사례 · 현재 모집 아님":item.status==="completed"?"거래 완료":kindLabel[c.kind];
- // Every item the 고시 「중개대상물의 표시·광고 명시사항 세부기준」 제6조 asks of an internet listing ad, in its order. Blanks read 미확인.
+ // Every item the 고시 「중개대상물의 표시·광고 명시사항 세부기준」 제6조 asks of an internet listing ad, in its order. Blanks read 미확인, except 화장실 수, which is left out until entered (owner decision 2026-11-05).
  const facts:[string,string][]=[
   ["거래 형태",dealForm(c)],
   ...(c.kind==="sale"?[["매매가",price(c.salePrice)] as [string,string]]:[["보증금",price(c.deposit)],["월세",price(c.rent)]] as [string,string][]),
   ["소재지",placeLabel(c)],
   ["전용면적",c.area?`${c.area}㎡ · 약 ${pyeong(c.area)}평`:"미확인"],
   ["층수",floorsLabel(c)],["중개대상물 종류",objectType(c)],["사용승인일",c.approvedDate||"미확인"],
-  ["방향",c.direction||"미확인"],["주차대수",c.parking||"미확인"],["화장실 수",c.restrooms||"미확인"],["입주 가능일",c.available||"미확인"],
+  ["방향",c.direction||"미확인"],["주차대수",c.parking||"미확인"],...(c.restrooms?[["화장실 수",c.restrooms] as [string,string]]:[]),["입주 가능일",c.available||"미확인"],
   ["관리비",price(c.management)],["권리금",price(c.premium)],["부가세",c.vat||"미확인"],
  ];
  const story:[string,string][]=work?[["고객의 출발점",c.initial],["해결할 문제",c.issue],["협의하고 도운 일",c.actions],["결과·이후 관계",c.outcome]]:[];
