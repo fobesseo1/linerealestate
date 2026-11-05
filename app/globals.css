@@ -130,6 +130,9 @@
   * { border-color: var(--color-border); }
   html { scroll-behavior: smooth; }
   body { font-size: var(--text-sm); letter-spacing: -0.025em; color: #222; background: #fff; }
+  /* Korean text wraps between words, not inside them (e.g. "사례" never splits into "사 / 례").
+     A single word longer than its box may still break, so narrow cards never overflow the screen. */
+  body { word-break: keep-all; overflow-wrap: anywhere; }
   a { text-decoration: none; }
   button { cursor: pointer; }
   button:disabled { cursor: default; }

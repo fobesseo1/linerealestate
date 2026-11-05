@@ -8,8 +8,9 @@ const titles={general:"내 조건에 맞는 점포를 요청하세요",listing:"
 export function ContactDialog(){
  const {contact,closeContact}=useSite();
  return <Dialog open={!!contact} onOpenChange={open=>{if(!open)closeContact();}}>
-  {contact&&<DialogContent>
-   <DialogTitle>{titles[contact.kind]}</DialogTitle>
+  {/* Tighter padding and title on phones so the submit button needs less scrolling. */}
+  {contact&&<DialogContent className="max-md:p-5">
+   <DialogTitle className="max-md:text-xl">{titles[contact.kind]}</DialogTitle>
    <DialogDescription>
     김영선 공인중개사가 확인 후 최대한 빨리 연락드립니다.
     {contact.title&&<><br/>{contact.title}{contact.reference&&` · ${contact.reference}`}</>}

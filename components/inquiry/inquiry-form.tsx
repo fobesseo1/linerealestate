@@ -61,9 +61,9 @@ export function InquiryForm({context,variant="dialog"}:{context:InquiryContext;v
 
  const field=cn("flex flex-col gap-2 font-medium",sidebar?"text-caption text-gray-300 max-md:text-xs":"text-xs");
  const note=sidebar?"text-gray-300":"";
- return <form className={cn("flex flex-col",sidebar?"mt-4 gap-3":"mt-5 gap-4")} onSubmit={submit}>
+ return <form className={cn("flex flex-col",sidebar?"mt-4 gap-3":"mt-5 gap-4 max-md:mt-3 max-md:gap-3")} onSubmit={submit}>
   <div className={cn("flex items-center gap-2 text-xs",sidebar?"text-gray-400":"text-gray-800")}>
-   <Character state={error?"fail":"think"} moving={moving} loop={busy} className="size-16"/>
+   <Character state={error?"fail":"think"} moving={moving} loop={busy} className="size-16 max-md:size-11"/>
    <span>{busy?"문의 내용을 안전하게 접수하고 있습니다.":error?"입력 내용과 안내를 확인해 주세요.":"희망 업종과 예산부터 알려주세요."}</span>
   </div>
   <label className="absolute -left-[10000px]" aria-hidden="true">웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label>

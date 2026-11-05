@@ -47,7 +47,8 @@ export function NaverMap({address, title, caption="건물 위치", positionOverr
     let removeMarker:(()=>void) | undefined;
     try {
       const center = new maps.LatLng(position.latitude, position.longitude);
-      map = new maps.Map(container.current, {center, zoom:17, zoomControl:true, scrollWheel:false});
+      // The small +/- zoom control keeps phone-sized maps readable.
+      map = new maps.Map(container.current, {center, zoom:17, zoomControl:true, zoomControlOptions:{style:(maps as unknown as {ZoomControlStyle?:{SMALL:number}}).ZoomControlStyle?.SMALL}, scrollWheel:false});
       const pin = new maps.Marker({map, position:center, title});
       removeMarker = () => pin.setMap(null);
     } catch {

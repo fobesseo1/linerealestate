@@ -23,7 +23,7 @@ export function LabHeader({no, title, children}: {no: number; title: string; chi
       <FlaskConical size={16} aria-hidden className="text-brand"/>
       <strong>테스트 페이지</strong>
       <span className="text-gray-800">실제 사이트 메뉴에는 연결되어 있지 않습니다.</span>
-      <Link href="/lab" className="ml-auto font-semibold text-brand underline-offset-4 hover:underline">테스트 목록</Link>
+      <Link href="/lab" className="-my-2 ml-auto py-2 font-semibold text-brand underline-offset-4 hover:underline">테스트 목록</Link>
     </div>
     <span className="text-tiny font-demibold tracking-[.2em] text-brand">LAB {String(no).padStart(2, "0")}</span>
     <h1 className="mt-2 text-[clamp(28px,3.4vw,48px)] font-heavy leading-[1.3]">{title}</h1>
@@ -36,7 +36,7 @@ export function ListingPicker({listings, selected, radius, radii = [300, 500], e
   return <form className="mb-6 flex flex-wrap items-end gap-3 border border-gray-200 bg-white p-4">
     <label className="grid min-w-0 flex-[1_1_320px] gap-1 text-xs font-semibold text-gray-900">매물·사례
       <NativeSelect name="listing" defaultValue={selected}>
-        {listings.map(l => <option key={l.number} value={l.number}>{l.number} · {l.kindName} · {l.title}</option>)}
+        {listings.map(l => <option key={l.number} value={l.number}>{l.number} · {l.title.length > 30 ? `${l.title.slice(0, 30)}…` : l.title}</option>)}
       </NativeSelect>
     </label>
     {radius !== undefined && <label className="grid w-32 gap-1 text-xs font-semibold text-gray-900">반경

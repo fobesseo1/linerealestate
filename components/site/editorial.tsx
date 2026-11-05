@@ -15,7 +15,7 @@ export function EditorialHeading({eyebrow,title,children}:{eyebrow:string;title:
 }
 
 export function Breadcrumb({children}:{children:ReactNode}){
- return <nav aria-label="현재 위치" className="my-6 flex items-center gap-2 text-xs text-gray-700"><Link href="/">홈</Link><ChevronRight size={12}/>{children}</nav>;
+ return <nav aria-label="현재 위치" className="my-6 flex items-center gap-2 text-xs text-gray-700"><Link href="/" className="inline-block py-2">홈</Link><ChevronRight size={12}/>{children}</nav>;
 }
 
 export function ContactButton({children,className}:{children:ReactNode;className?:string}){

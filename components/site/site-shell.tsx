@@ -49,12 +49,12 @@ function SiteFooter(){
     <dt>대표</dt><dd className="text-gray-200">개업공인중개사 {site.agent}</dd>
     <dt>등록번호</dt><dd className="text-gray-200">{site.registrationNumber}</dd>
     <dt>소재지</dt><dd className="text-gray-200">{site.address}</dd>
-    <dt>전화</dt><dd className="text-gray-200"><a href={site.officeHref}>{site.office}</a> · <a href={site.mobileHref}>{site.mobile}</a></dd>
+    <dt>전화</dt><dd className="text-gray-200"><a href={site.officeHref} className="inline-block py-1.5">{site.office}</a> · <a href={site.mobileHref} className="inline-block py-1.5">{site.mobile}</a></dd>
     <dt>사업자번호</dt><dd>{site.businessNumber}</dd>
     <dt>영업시간</dt><dd>{site.hoursText}</dd>
     <dt>이메일</dt><dd>{site.email}</dd>
    </dl>
-   <p className="text-right max-md:text-left"><a href="/admin/">관리자</a><br/>LINE REAL ESTATE<br/>점포 비용 비교는 가정에 따른 예시입니다.<br/>실제 중개 사례의 금액은 거래 당시 조건입니다.</p>
+   <p className="text-right max-md:text-left"><a href="/admin/" className="inline-block py-2">관리자</a><br/>LINE REAL ESTATE<br/>점포 비용 비교는 가정에 따른 예시입니다.<br/>실제 중개 사례의 금액은 거래 당시 조건입니다.</p>
   </div>
  </footer>;
 }

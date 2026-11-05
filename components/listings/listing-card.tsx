@@ -22,7 +22,7 @@ export function ListingCard({item,saved,onFavorite}:{item:Publication;saved?:boo
    <div className="mb-2 flex items-center justify-between text-tiny text-gray-600 max-md:flex-col max-md:items-start max-md:gap-1"><span className="text-gray-800">{c.industry||kindLabel[c.kind]}</span><span>{item.number}</span></div>
    <h3 className="text-xl font-extrabold leading-normal tracking-[-0.045em] max-md:min-h-9">{c.title}</h3>
    {!isWork(item)&&<div className="mt-4 text-[19px] font-extrabold leading-[1.7] text-brand">{c.kind==="sale"?`매매 ${price(c.salePrice)}`:`보증금 ${price(c.deposit)} / 월세 ${price(c.rent)}`}</div>}
-   <p className="mb-3 mt-4 text-body leading-[1.8] text-gray-800">{c.description.slice(0,75)}</p>
+   <p className="mb-3 mt-4 line-clamp-3 text-body leading-[1.8] text-gray-800">{c.description}</p>
   </Link>
  </article>;
 }

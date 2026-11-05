@@ -42,7 +42,7 @@ export function LabMap({center, radius, points, polygons = [], zoom = 17, onSele
   useEffect(() => {
     const maps = (window as W).naver?.maps;
     if (!ready || !maps || !box.current) return;
-    try { map.current = new maps.Map(box.current, {center: new maps.LatLng(center.latitude, center.longitude), zoom, zoomControl: true, scrollWheel: false}); }
+    try { map.current = new maps.Map(box.current, {center: new maps.LatLng(center.latitude, center.longitude), zoom, zoomControl: true, zoomControlOptions: {style: (maps as unknown as {ZoomControlStyle?: {SMALL: number}}).ZoomControlStyle?.SMALL}, scrollWheel: false}); }
     catch { setError("지도를 초기화하지 못했습니다."); }
     return () => { try { map.current?.destroy(); } catch { /* SDK already disposed. */ } map.current = null; };
   }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps

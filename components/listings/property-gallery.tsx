@@ -32,7 +32,7 @@ export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
    <span aria-live="polite" aria-atomic="true" className="absolute bottom-3 right-3 rounded-sm bg-black/70 px-2 py-1 text-micro text-white">{index+1} / {photos.length}</span>
   </div>
   <div ref={strip} className="relative my-3 flex max-w-full gap-3 overflow-x-auto">
-   {photos.map((photo,i)=><button type="button" key={photo.path} aria-label={`사진 ${i+1} 보기`} aria-pressed={index===i} onClick={()=>setIndex(i)} className="h-18 w-25 shrink-0 overflow-hidden border border-[#ddd] aria-pressed:border-3 aria-pressed:border-brand">
+   {photos.map((photo,i)=><button type="button" key={photo.path} aria-label={`사진 ${i+1} 보기`} aria-pressed={index===i} onClick={()=>setIndex(i)} className="h-18 w-25 shrink-0 overflow-hidden border max-md:h-14 max-md:w-19 border-[#ddd] aria-pressed:border-3 aria-pressed:border-brand">
     <img src={photo.url} alt={photo.label||`사진 ${i+1}`} loading="lazy" className="size-full object-cover"/>
    </button>)}
   </div>

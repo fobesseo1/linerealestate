@@ -32,20 +32,21 @@ export function PropertyDetail({item}:{item:Publication}){
   ["관리비",price(c.management)],["권리금",price(c.premium)],["부가세",c.vat||"미확인"],
  ];
  const story:[string,string][]=work?[["고객의 출발점",c.initial],["해결할 문제",c.issue],["협의하고 도운 일",c.actions],["결과·이후 관계",c.outcome]]:[];
- return <div className="page pb-15 pt-8">
-  <nav aria-label="현재 위치" className="my-6 flex items-center gap-2 text-xs text-gray-700"><Link href="/">홈</Link> / {kindLabel[c.kind]} / {item.number}</nav>
-  <div className="mb-9 mt-7 flex items-center justify-between border-b-4 border-brand pb-8 pt-6 max-md:items-start max-md:gap-4">
+ return <div className="page pb-15 pt-8 max-md:pt-1">
+  <nav aria-label="현재 위치" className="my-6 flex items-center gap-2 text-xs text-gray-700 max-md:my-2"><Link href="/" className="inline-block py-2">홈</Link> / {kindLabel[c.kind]} / {item.number}</nav>
+  <div className="mb-9 mt-7 flex items-center justify-between border-b-4 border-brand pb-8 pt-6 max-md:mb-5 max-md:mt-0 max-md:items-start max-md:gap-4 max-md:pb-5 max-md:pt-0">
    <div>
     <div className="mb-3 flex items-center gap-3 text-tiny text-gray-500"><Badge className="font-medium">{status}</Badge><span>{item.number}</span></div>
     <h1 className="mb-3 text-[clamp(28px,3.1vw,44px)] font-heavy leading-[1.3] tracking-[-0.045em]">{c.title}</h1>
     <p className="flex items-center gap-1 text-sm text-gray-600">{[placeLabel(c),floorLabel(c)].filter(Boolean).join(" · ")}</p>
    </div>
   </div>
-  <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-10 max-lg:grid-cols-[minmax(0,1fr)_280px] max-lg:gap-6 max-md:grid-cols-1 max-md:gap-0">
+  {/* Two columns only from 1024px; tablets stack the photos above the contact card. */}
+  <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-10 max-lg:grid-cols-1 max-lg:gap-0">
    <div className="min-w-0">
     {c.photos.length>0?<PropertyGallery key={item.number} photos={c.photos} title={c.title}/>:<PhotoPlaceholder className="mt-6 rounded-lg"/>}
     <Section title={work?"거래 당시 점포 조건":"거래·점포 정보"}>
-     <dl className="grid grid-cols-2 border-t border-gray-200 max-lg:grid-cols-1">
+     <dl className="grid grid-cols-2 border-t border-gray-200 max-md:grid-cols-1">
       {facts.map(([label,value])=><div key={label} className="flex gap-3 border-b border-gray-200 px-2 py-4"><dt className="basis-21 shrink-0 text-xs text-gray-700">{label}</dt><dd className="text-md font-demibold text-gray-800 [overflow-wrap:anywhere]">{value}</dd></div>)}
      </dl>
     </Section>
@@ -58,8 +59,9 @@ export function PropertyDetail({item}:{item:Publication}){
     {c.showMap&&c.address&&<NaverMap address={c.address} title={c.title} caption={work?"실제 중개 완료 사례":item.status==="completed"?"거래 완료":kindLabel[c.kind]} positionOverride={c.latitude&&c.longitude?{latitude:c.latitude,longitude:c.longitude}:undefined}/>}
     <Link href={work?"/works":"/listings"} className="mt-7 inline-flex items-center gap-2 py-5 text-xs font-bold text-brand"><ArrowLeft size={16}/>목록으로</Link>
    </div>
-   <aside className="sticky top-21 mt-8 max-h-[calc(100dvh-100px)] min-w-0 self-start overflow-y-auto overscroll-contain [scrollbar-width:thin] max-md:static max-md:mt-0 max-md:max-h-none max-md:overflow-visible max-md:pt-8">
-    <div className="border-t-4 border-brand bg-ink p-6 text-white">
+   <aside className="sticky top-21 mt-8 max-h-[calc(100dvh-100px)] min-w-0 self-start overflow-y-auto overscroll-contain [scrollbar-width:thin] max-lg:static max-lg:mt-0 max-lg:grid max-lg:max-h-none max-lg:grid-cols-2 max-lg:gap-3 max-lg:overflow-visible max-lg:pt-8 max-md:grid-cols-1">
+    {/* Phones already have the fixed call / inquiry bar, so this card starts at tablet width. */}
+    <div className="border-t-4 border-brand bg-ink p-6 text-white max-lg:row-span-2 max-md:hidden">
      <AgentHeading/>
      <a href={site.mobileHref} className="mb-1 mt-5 block text-[27px] font-bold tracking-[-0.03em]">{site.mobile}</a>
      <p className="mb-4 text-caption leading-[1.7] text-gray-400">{item.number}을 말씀해 주세요. 확인 후 최대한 빨리 안내드립니다.</p>
@@ -77,7 +79,7 @@ export function PropertyDetail({item}:{item:Publication}){
       <dt className="text-gray-400">전화</dt><dd>{site.office} · {site.mobile}</dd>
      </dl>
     </Card>
-    <Card className="mt-3 p-6">
+    <Card className="mt-3 p-6 max-lg:mt-0">
      <h3 className="mb-2 text-xs font-semibold">정보 확인 안내</h3>
      <p className="text-caption leading-[1.8] text-gray-500">미입력 항목은 미확인으로 표시합니다. 거래 조건과 시설은 상담·현장 확인 시 함께 살펴봅니다.</p>
     </Card>

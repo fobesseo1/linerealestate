@@ -53,10 +53,10 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
   <section data-section="home" aria-label="첫 화면" className="relative grid grid-cols-[.9fr_1.1fr] items-center gap-[5%] overflow-hidden bg-ink px-gutter pb-14 pt-11 text-white before:pointer-events-none before:absolute before:bottom-5 before:left-0 before:text-[clamp(150px,22vw,350px)] before:font-black before:leading-none before:tracking-[-12px] before:text-white/[0.025] before:content-['SANBON'] max-md:grid-cols-1 max-md:gap-9 max-md:py-9">
    <div className="relative z-2">
     <Eyebrow>SANBON, YOUR NEXT PLACE</Eyebrow>
-    <h1 className="text-[clamp(40px,4.5vw,72px)] font-heavy leading-[1.15] tracking-[-3px] max-md:text-[46px]">산본의 상가,<br/><em className="not-italic text-brand">지금 만나보세요.</em></h1>
+    <h1 className="text-[clamp(40px,4.5vw,72px)] font-heavy leading-[1.15] max-md:text-[46px] max-[380px]:text-[38px]">산본의 상가,<br/><em className="not-italic text-brand">지금 만나보세요.</em></h1>
     <p className="my-6 text-sm leading-[1.85] text-gray-400 max-md:my-5 max-md:text-body">상가 임대부터 매매, 입점 조건 협의까지.<br/>사진과 조건을 보고, 현장에서 함께 확인하세요.</p>
     <a href="#properties" className="relative inline-flex animate-nudge items-center gap-6 overflow-hidden bg-brand px-6 py-4 text-sm font-demibold text-white after:pointer-events-none after:absolute after:-inset-x-[40%] after:-inset-y-[80%] after:-translate-x-4/5 after:animate-shine after:bg-[linear-gradient(100deg,transparent_42%,#ffffff55_50%,transparent_58%)] after:content-['']">지금 등록된 상가 보기 <ArrowUpRight size={20}/></a>
-    <div className="mt-9 flex gap-6 max-md:mt-6 max-md:gap-8">
+    <div className="mt-9 flex gap-6 max-md:mt-6 max-md:grid max-md:grid-cols-3 max-md:gap-3">
      {[[listings.length,"공개 중인 매물"],[since?`${since}~`:works.length,since?"산본 입점 중개":"등록된 중개 사례"],["산본","상가 전문"]].map(([value,label])=><span key={label} className="flex flex-col gap-2 text-tiny text-gray-600"><b className="text-2xl font-semibold text-white">{value}</b>{label}</span>)}
     </div>
    </div>
@@ -64,7 +64,8 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
     :<div role="status" className="rounded-sm bg-ink-raised px-8 py-24 text-center text-gray-400">{failed?"매물을 불러오지 못했습니다. 새로고침해 주세요.":"공개 중인 매물이 없습니다."}</div>}
    <nav aria-label="조건별 매물 바로가기" className="relative z-1 col-span-full mt-4 grid grid-cols-6 gap-3 max-lg:grid-cols-3 max-md:mt-0 max-md:gap-2">
     {shortcuts.map(([label,count,href],i)=><Link key={label} href={href} className={cn("group relative flex flex-col gap-1 border border-ink-line bg-ink-raised p-4 text-white transition-colors hover:border-brand max-md:p-3",i===0&&"border-l-4 border-l-brand")}>
-     <span className="text-xs text-gray-400 max-md:text-caption">{label}</span>
+     {/* Right padding keeps long labels ("월세 150만원 이하") clear of the corner arrow. */}
+     <span className="pr-5 text-xs text-gray-400 max-md:text-caption">{label}</span>
      <b className="text-2xl font-heavy max-md:text-xl">{count}<small className="ml-1 text-xs font-normal text-gray-400">개</small></b>
      <ArrowUpRight size={16} className="absolute right-3 top-3 text-brand transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"/>
     </Link>)}
@@ -95,8 +96,8 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
     {works.slice(0,4).map((item,i)=><Link key={item.id} href={detailHref(item)} data-companion-title={item.content.title} className="group">
      <div className="relative h-45 overflow-hidden rounded-md max-md:h-36"><Photo item={item} className="transition-transform duration-600 group-hover:scale-106"/><span className="absolute bottom-3 left-3 bg-black/65 px-2 py-1 text-micro text-white">중개 완료 사례</span></div>
      <small className="mt-4 block text-tiny text-gray-500">0{i+1} / {item.content.industry||"입점 이야기"}</small>
-     <h3 className="my-2 flex justify-between gap-2 text-lead font-demibold max-md:text-md">{item.content.title}<ArrowUpRight size={20}/></h3>
-     <p className="text-xs leading-[1.7] text-gray-500 max-md:text-caption">{item.content.description.slice(0,85)}</p>
+     <h3 className="my-2 flex items-start justify-between gap-2 text-lead font-demibold max-md:text-md">{item.content.title}<ArrowUpRight size={20} className="mt-0.5"/></h3>
+     <p className="line-clamp-3 text-xs leading-[1.7] text-gray-500 max-md:text-caption">{item.content.description}</p>
     </Link>)}
    </div>
   </HomeSection>
@@ -109,7 +110,7 @@ export function HomePage({initial,records,since}:{initial:Publication[]|null;rec
    <div className="flex items-center justify-between gap-8 border border-t-4 border-gray-200 border-t-brand bg-white px-10 py-9 max-lg:flex-wrap max-md:gap-5 max-md:px-6 max-md:py-7">
     <div><Eyebrow>A LOCAL PARTNER</Eyebrow><h2 className="text-[28px] font-heavy leading-[1.35] max-md:text-2xl">조건을 듣고,<br/>대안을 함께 찾습니다.</h2></div>
     <p className="text-sm leading-[1.9] text-gray-700 max-lg:flex-1 max-md:flex-none max-md:text-body">희망 업종과 예산이 아직 정리되지 않아도 괜찮습니다.<br/>임대료와 시설, 입점 전 협의할 조건부터 이야기해 주세요.</p>
-    <div className="flex shrink-0 gap-3 max-md:w-full">
+    <div className="flex shrink-0 gap-3 max-md:w-full max-[380px]:flex-col max-[380px]:*:flex-none">
      <Button asChild variant="outline" className="h-12 rounded-sm border-2 border-brand bg-white px-5 text-sm font-bold text-brand hover:bg-brand-tint max-md:flex-1"><a href={site.mobileHref}><Phone size={17}/>{site.mobile}</a></Button>
      <Button onClick={()=>openContact()} className="h-12 rounded-sm px-6 text-sm font-bold max-md:flex-1">상담 요청 <ArrowRight size={16}/></Button>
     </div>
@@ -141,7 +142,7 @@ function Featured({item,count,index,onMove,onPause}:{item:Publication;count:numb
    <h2 className="mb-2 mt-3 text-[21px] leading-[1.4] tracking-[-0.6px] max-md:mt-2 max-md:text-lead"><Link href={href}>{item.content.title}</Link></h2>
    <Money item={item} className="my-2" size="text-[22px] max-md:text-lg"/>
    <div className="mt-2 flex items-center justify-between pt-2">
-    <Link href={href} className="flex items-center gap-2 text-xs">매물 자세히 <ArrowUpRight size={16}/></Link>
+    <Link href={href} className="-my-2 flex items-center gap-2 py-2 text-xs">매물 자세히 <ArrowUpRight size={16}/></Link>
     <span className="text-tiny text-gray-500">{index+1} / {count}</span>
    </div>
   </div>

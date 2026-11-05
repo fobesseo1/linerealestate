@@ -1,13 +1,26 @@
 "use client";
 import {useEffect,useRef,useState,type CSSProperties} from "react";
+import {X} from "lucide-react";
 import {Character} from "@/components/inquiry/character";
+import {cn} from "@/lib/utils";
 
 type Section="home"|"properties"|"service"|"works";
 
-/** One guide character that floats beside the home page, reacting to scroll position and hovered listings. */
+/**
+ * One guide character that floats beside the home page, reacting to scroll position and hovered listings.
+ * Below 1024px the bubble only peeks for a few seconds after its message changes, so it never sits on top
+ * of prices or buttons; the character itself stays as a small button.
+ */
 export function Companion({moving,failed,count,onContact}:{moving:boolean;failed:boolean;count:number;onContact:()=>void}){
  const [progress,setProgress]=useState(0),[scrolling,setScrolling]=useState(false),[section,setSection]=useState<Section>("home"),[target,setTarget]=useState(""),[hidden,setHidden]=useState(false),[lift,setLift]=useState(0);
- const box=useRef<HTMLElement>(null);
+ const [compact,setCompact]=useState(false),[peek,setPeek]=useState(true);
+ const box=useRef<HTMLElement>(null),lastText=useRef("");
+ useEffect(()=>{
+  const media=matchMedia("(max-width: 1023px)");
+  const update=()=>setCompact(media.matches);
+  update();media.addEventListener("change",update);
+  return()=>media.removeEventListener("change",update);
+ },[]);
  useEffect(()=>{
   let raf=0,timer:ReturnType<typeof setTimeout>;
   const update=()=>{
@@ -26,19 +39,31 @@ export function Companion({moving,failed,count,onContact}:{moving:boolean;failed
   window.addEventListener("scroll",scroll,{passive:true});window.addEventListener("resize",scroll);document.addEventListener("pointerover",over);document.addEventListener("focusin",over);update();
   return()=>{window.removeEventListener("scroll",scroll);window.removeEventListener("resize",scroll);document.removeEventListener("pointerover",over);document.removeEventListener("focusin",over);cancelAnimationFrame(raf);clearTimeout(timer);};
  },[]);
- if(hidden)return null;
  const empty=failed||count===0;
  const state=empty?"fail":scrolling&&!target?"think":"success";
  const text=target?`${target.slice(0,28)} · 사진과 조건을 확인해 보세요`:empty?"다른 조건으로 찾아볼까요?":section==="works"?"이곳의 다음 이야기를 만나보세요":section==="service"?"희망 업종과 예산을 함께 정리해요":section==="properties"?`${count}개 매물 · 마음에 드는 사진에 올려 보세요`:"내려 보세요! 함께 따라갈게요";
- return <aside ref={box} className="fixed bottom-16 right-6 z-35 translate-y-[calc(-1*var(--shift))] text-[#292929] transition-[translate] duration-200 ease-out max-md:bottom-26 max-md:right-2" style={{"--shift":`${Math.max(moving?Math.round(progress*90):0,lift)}px`} as CSSProperties}>
-  <button onClick={onContact} aria-label="캐릭터와 내 조건으로 상담 요청" className="flex max-w-full items-center text-left">
-   <Character state={state} moving={moving} loop className={moving&&scrolling?"size-25 animate-hop max-md:size-18":"size-25 max-md:size-18"}/>
-   <span className="grid w-55 gap-1 rounded-2xl border border-brand/20 bg-white px-4 py-3 shadow-[0_7px_25px_#20202018] max-md:w-42 max-md:px-3 max-md:py-2">
+ // Small screens: start folded (the bubble would sit on the first-screen button), then peek for
+ // four seconds each time the message changes while scrolling. Large screens always show it.
+ useEffect(()=>{
+  const changed=lastText.current!==""&&lastText.current!==text;
+  lastText.current=text;
+  if(!compact){setPeek(true);return;}
+  if(!changed){setPeek(false);return;}
+  setPeek(true);
+  const timer=setTimeout(()=>setPeek(false),4000);
+  return()=>clearTimeout(timer);
+ },[text,compact]);
+ if(hidden)return null;
+ const open=!compact||peek;
+ return <aside ref={box} className="fixed bottom-16 right-6 z-35 translate-y-[calc(-1*var(--shift))] text-[#292929] transition-[translate] duration-200 ease-out max-md:bottom-24 max-md:right-3" style={{"--shift":`${Math.max(moving?Math.round(progress*90):0,lift)}px`} as CSSProperties}>
+  <button onClick={onContact} aria-label="캐릭터와 내 조건으로 상담 요청" className="flex items-center text-left">
+   <Character state={state} moving={moving} loop className={moving&&scrolling?"size-25 animate-hop max-lg:size-16":"size-25 max-lg:size-16"}/>
+   <span className={cn("grid w-55 min-w-0 gap-1 rounded-2xl border border-brand/20 bg-white px-4 py-3 shadow-[0_7px_25px_#20202018] max-md:w-42 max-md:px-3 max-md:py-2",!open&&"hidden")}>
     <small className="text-tiny text-gray-600">스크롤 동행</small>
     <strong className="text-body leading-normal max-md:text-caption">{text}</strong>
     <em className="text-caption not-italic text-brand">조건 상담 ↗</em>
    </span>
   </button>
-  <button aria-label="캐릭터 숨기기" onClick={()=>setHidden(true)} className="absolute -top-2 right-0 size-6 rounded-full border border-[#ddd] bg-white text-base leading-4 text-gray-800">×</button>
+  {open&&<button aria-label="캐릭터 숨기기" onClick={()=>setHidden(true)} className="absolute -right-1 -top-3 grid size-8 place-items-center rounded-full border border-[#ddd] bg-white text-gray-800 shadow-sm"><X size={16} aria-hidden/></button>}
  </aside>;
 }

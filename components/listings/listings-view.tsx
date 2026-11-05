@@ -67,7 +67,7 @@ export function ListingsView({initial,filters:start}:{initial:Publication[]|null
      <Toggle pressed={!!filters.premium} onClick={()=>setFilters({...filters,premium:filters.premium?undefined:"0"})}>무권리</Toggle>
      <Button variant="outline" className="h-11 rounded-sm bg-white px-4 text-body text-gray-900 hover:bg-gray-50" onClick={()=>setFilters({})}>조건 초기화</Button>
     </div>
-    <span className="text-xs text-gray-800">사진과 조건을 확인하고, 현장에서 함께 살펴보세요.</span>
+    <span className="text-xs text-gray-800 max-md:hidden">사진과 조건을 확인하고, 현장에서 함께 살펴보세요.</span>
    </div>
   </section>
   {shown.length?<section ref={top} className="page scroll-mt-6 pb-18 pt-2">

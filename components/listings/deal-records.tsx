@@ -45,6 +45,6 @@ function RecordCard({record:r}:{record:DealRecord}){
  </>;
  return <li className="group relative flex flex-col overflow-hidden border-2 border-ink bg-white transition-[translate,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--color-brand)]">
   {r.map_url?<a href={r.map_url} target="_blank" rel="noopener noreferrer" aria-label={`${r.name} 네이버 플레이스에서 보기`} className="flex flex-1 flex-col">{body}</a>:<div className="flex flex-1 flex-col">{body}</div>}
-  {r.case_number&&<Link href={`/works/${r.case_number}`} className="absolute right-3 top-3"><Badge className="gap-1 font-demibold">중개 사례<ArrowUpRight size={12}/></Badge></Link>}
+  {r.case_number&&<Link href={`/works/${r.case_number}`} className="absolute right-1 top-1 p-2"><Badge className="gap-1 font-demibold">중개 사례<ArrowUpRight size={12}/></Badge></Link>}
  </li>;
 }

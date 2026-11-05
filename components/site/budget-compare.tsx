@@ -20,19 +20,20 @@ export function BudgetCompare(){
    <Input id="budget" type="number" min="0" step="100" value={budget} onChange={event=>setBudget(Math.max(0,Number(event.target.value)))} className="w-35 px-4 py-2.5 text-[22px] font-demibold max-md:w-28 max-md:text-xl"/>
    <span className="text-gray-700">만원</span>
   </div>
+  {/* Phones show all three columns at once (fixed layout, smaller padding) so B is never hidden off-screen. */}
   <div className="overflow-auto">
-   <table className="w-full min-w-145 border-collapse border-t-2 border-t-[#222] bg-white text-left">
-    <thead><tr>{["비교 항목","A · 생활동선형 소형","B · 전면형 중형"].map(label=><th key={label} className="border-b border-gray-200 bg-ink px-5 py-4 text-sm text-white max-md:px-4 max-md:py-3 max-md:text-xs">{label}</th>)}</tr></thead>
+   <table className="w-full min-w-145 table-fixed border-collapse max-md:min-w-0 border-t-2 border-t-[#222] bg-white text-left">
+    <thead><tr>{["비교 항목","A · 생활동선형 소형","B · 전면형 중형"].map(label=><th key={label} className="border-b border-gray-200 bg-ink px-5 py-4 text-sm text-white first:w-[30%] max-md:px-2 max-md:py-3 max-md:text-xs max-md:first:w-[26%]">{label}</th>)}</tr></thead>
     <tbody>{rows.map(([label,a,b])=>{const total=label==="초기 예산 합계";return <tr key={label} className={cn(total&&"bg-[#fff6f8]")}>
-     <th className="w-[30%] border-b border-gray-200 px-5 py-4 text-xs font-medium text-gray-700 max-md:px-4 max-md:py-3">{label}</th>
-     {[a,b].map((value,i)=><td key={i} className={cn("border-b border-gray-200 px-5 py-4 text-body max-md:px-4 max-md:py-3 max-md:text-xs",total&&"font-demibold text-brand")}>{value}</td>)}
+     <th className="border-b border-gray-200 px-5 py-4 text-xs font-medium text-gray-700 max-md:px-2 max-md:py-3 max-md:text-caption">{label}</th>
+     {[a,b].map((value,i)=><td key={i} className={cn("border-b border-gray-200 px-5 py-4 text-body max-md:px-2 max-md:py-3 max-md:text-xs",total&&"font-demibold text-brand")}>{value}</td>)}
     </tr>;})}</tbody>
    </table>
   </div>
   <div className="mt-6 grid grid-cols-2 gap-5 max-md:gap-3">
    {totals.map(([label,cost])=><div key={label} className="rounded-lg border-t-4 border-brand bg-white p-6 max-md:p-4">
     <small className="text-caption text-gray-600">{label} · 입력 예산 대비</small>
-    <strong className={cn("mt-2 block text-2xl font-demibold max-md:text-xl",budget<cost&&"text-brand")}>{price(String(Math.abs(budget-cost)))} {budget>=cost?"여유":"부족"}</strong>
+    <strong className={cn("mt-2 block text-2xl font-demibold max-md:text-lg",budget<cost&&"text-brand")}>{price(String(Math.abs(budget-cost)))} {budget>=cost?"여유":"부족"}</strong>
    </div>)}
   </div>
  </>;
