@@ -34,6 +34,8 @@ npm run dev
 - `components/ui/` shadcn/ui 컴포넌트, `components/site/` 공통 헤더·푸터·상담창, `components/home/` A-1 홈, `components/listings/` 매물·사례, `components/inquiry/` 문의 양식
 - `lib/content/` 공개 자료 읽기·형식, `lib/inquiries/` 문의 저장·알림
 
+로그인 전 화면은 브라우저에서 DB를 직접 부르지 않고 `/api/content/publications`를 거칩니다. 서버가 공개 키로 DB를 부를 때는 `SUPABASE_GATE_TOKEN`(서버 전용, `NEXT_PUBLIC_` 금지) 값을 `x-ls-gate` 머리글로 붙입니다.
+
 디자인 기준은 [docs/design-system.md](docs/design-system.md), 매물 등록·수정 절차는 [docs/admin-workflow.md](docs/admin-workflow.md)를 따릅니다.
 
 ## 네이버 지도

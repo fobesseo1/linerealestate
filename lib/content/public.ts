@@ -1,11 +1,14 @@
+import "server-only";
 import {createClient} from "@supabase/supabase-js";
 import config from "./public-config.json";
+import {gateHeaders} from "./gate";
+import {toPublicCard} from "./public-card";
 import type {DealRecord,Publication} from "./types";
 
 // Published content is public; cache each read for 30 seconds so pages stay fast and fresh.
 const db=config.url&&config.publishableKey?createClient(config.url,config.publishableKey,{
  auth:{persistSession:false,autoRefreshToken:false},
- global:{fetch:(input,init)=>fetch(input,{...init,next:{revalidate:30}})},
+ global:{headers:gateHeaders(),fetch:(input,init)=>fetch(input,{...init,next:{revalidate:30}})},
 }):null;
 
 /** Server-side read of public listings and cases. `null` means the read failed. */
@@ -14,6 +17,11 @@ export async function getPublications():Promise<Publication[]|null>{
  const {data,error}=await db.from("lineestate_published").select("*").in("status",["active","completed"]).order("published_at",{ascending:false});
  if(error){console.error("lineestate_published read failed",error.message);return null;}
  return data||[];
+}
+
+/** The same list, reduced to what the browser needs for cards. */
+export async function getPublicationCards():Promise<Publication[]|null>{
+ return (await getPublications())?.map(toPublicCard)??null;
 }
 
 /** Visible contract records, newest month first. `null` means the read failed. */

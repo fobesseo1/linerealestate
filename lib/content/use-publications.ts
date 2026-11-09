@@ -1,6 +1,5 @@
 "use client";
 import {useEffect,useState} from "react";
-import {contentClient} from "./client";
 import type {Publication} from "./types";
 
 /** Starts from the server-rendered list and keeps it current while the page is open. */
@@ -10,10 +9,10 @@ export function usePublications(initial:Publication[]|null){
  useEffect(()=>{
   let live=true;
   async function refresh(){
-   const db=contentClient();if(!db)return;
-   const {data,error}=await db.from("lineestate_published").select("*").in("status",["active","completed"]).order("published_at",{ascending:false});
+   let data:Publication[]|null=null;
+   try{const response=await fetch("/api/content/publications");if(response.ok)data=await response.json();}catch{}
    if(!live)return;
-   if(error)setFailed(true);else{setItems(data||[]);setFailed(false);}
+   if(data){setItems(data);setFailed(false);}else setFailed(true);
   }
   const timer=setInterval(()=>{if(!document.hidden)refresh();},10000);
   const visible=()=>{if(!document.hidden)refresh();};
