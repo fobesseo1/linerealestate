@@ -8,7 +8,14 @@
     "build:pages": "node scripts/build-pages.mjs",
     "start": "next start --hostname 0.0.0.0 --port 3010",
     "typecheck": "tsc --noEmit",
-    "maps:prepare": "node scripts/prepare-map-positions.mjs"
+    "maps:prepare": "node scripts/prepare-map-positions.mjs",
+    "test": "npm run test:guard && npm run typecheck && npm run test:unit",
+    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.mjs",
+    "test:step1": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/step1-code.mjs",
+    "test:guard": "node scripts/qa/guard-check.mjs",
+    "check:site": "node scripts/qa/site-check.mjs",
+    "check:standalone": "node scripts/qa/standalone-check.mjs",
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.2.0",

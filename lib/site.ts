@@ -1,3 +1,5 @@
+import {siteUrl} from "./site-url";
+
 /**
  * Office facts shown on every public page. The legal fields must match the 중개사무소 등록증
  * exactly (공인중개사법 시행령 제17조의2제1항, 국토교통부 고시 「중개대상물의 표시·광고 명시사항 세부기준」 제3조·제4조).
@@ -6,7 +8,8 @@
 export const site = {
   /** Brand used in the logo and page titles. Always shown together with `registeredName`. */
   name: "선부동산",
-  url: "https://linerealestate.vercel.app",
+  /** From NEXT_PUBLIC_SITE_URL (lib/site-url.ts). */
+  url: siteUrl,
   /** 등록증에 기재된 중개사무소 명칭 */
   registeredName: "선부동산공인중개사사무소",
   /** 중개사무소 등록번호 (군포시) */

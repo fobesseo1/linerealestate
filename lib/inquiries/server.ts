@@ -2,16 +2,16 @@ import "server-only";
 import {createClient} from "@supabase/supabase-js";
 import {createCipheriv,createDecipheriv,createHash,randomBytes} from "node:crypto";
 import publicConfig from "@/lib/content/public-config.json";
+import {isAllowedOrigin,siteUrl} from "@/lib/site-url";
 
-export const siteOrigin="https://linerealestate.vercel.app";
+export const siteOrigin=siteUrl;
 export function serverDB(){
  const secret=process.env.SUPABASE_SECRET_KEY;
  if(!secret)throw Error("SERVER_NOT_CONFIGURED");
  return createClient(publicConfig.url,secret,{auth:{persistSession:false,autoRefreshToken:false}});
 }
 export function sameOrigin(request:Request){
- const origin=request.headers.get("origin");
- return origin===siteOrigin || (process.env.NODE_ENV!=="production" && origin==="http://localhost:3010");
+ return isAllowedOrigin(request.headers.get("origin"));
 }
 export async function requireAdmin(request:Request){
  const token=request.headers.get("authorization")?.replace(/^Bearer /,"");

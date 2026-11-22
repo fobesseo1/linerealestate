@@ -1,0 +1,5 @@
+#!/bin/sh
+# 푸시 전 전체 시험: 지킴이 → 타입 검사 → 단위 시험 (npm test). 실패하면 푸시하지 않는다.
+# main에 푸시하면 Vercel(이전 뒤엔 AWS Coolify)이 바로 배포하므로 여기서 막는다.
+# 설치: npm run hooks:install  (git config core.hooksPath .githooks)
+exec npm test --silent

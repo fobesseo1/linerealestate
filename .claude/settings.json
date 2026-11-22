@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/qa/guard-check.mjs\" --hook",
+            "timeout": 30,
+            "statusMessage": "선부동산 지킴이 검사 중..."
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/qa/stop-check.mjs\"",
+            "timeout": 240,
+            "statusMessage": "타입 검사·단위 시험 중..."
+          }
+        ]
+      }
+    ]
+  }
+}

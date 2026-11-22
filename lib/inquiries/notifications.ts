@@ -20,7 +20,7 @@ export async function sendGmail(text:string,subject:string,id:string){
  const config=await loadConfig();if(!config.gmailAppPassword)return false;
  const email="ysyh17301730@gmail.com";
  const smtp=nodemailer.createTransport({host:"smtp.gmail.com",port:465,secure:true,auth:{user:email,pass:config.gmailAppPassword},connectionTimeout:8000,greetingTimeout:8000,socketTimeout:10000,disableFileAccess:true,disableUrlAccess:true});
- await smtp.sendMail({from:{name:"선부동산 문의 알림",address:email},to:email,subject,messageId:`<linerealestate-${id}@linerealestate.vercel.app>`,text:`${text}\n\n관리자 문의함: ${siteOrigin}/admin/?section=inquiries`});return true;
+ await smtp.sendMail({from:{name:"선부동산 문의 알림",address:email},to:email,subject,messageId:`<linerealestate-${id}@${new URL(siteOrigin).hostname}>`,text:`${text}\n\n관리자 문의함: ${siteOrigin}/admin/?section=inquiries`});return true;
 }
 export async function deliverInquiry(id:string){
  const db=serverDB();const {data:row,error}=await db.from("linerealestate_inquiries").select("*").eq("id",id).single();if(error||!row)throw Error("INQUIRY_UNAVAILABLE");

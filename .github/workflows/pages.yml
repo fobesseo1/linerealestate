@@ -24,6 +24,8 @@ jobs:
       - uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm run build:pages
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .next-pages
