@@ -98,9 +98,11 @@
   - 손 확인 완료(11-22): 새 주소 관리자 로그인, 알림 테스트 → 카카오·메일 수신, 카카오 링크 새 주소로 열림(사용자). Apps Script 주소 변경 후 매분 실행 '완료됨'.
 
 ### 4단계 — 시험 → 전환
-- [ ] 새 주소에서: 홈·매물·사례·지도·문의 접수·메일/카카오 알림·관리자 로그인·사진 등록·sitemap/robots·카톡 미리보기.
-- [ ] Vercel Routes로 옛 주소 → 새 주소 301(경로·쿼리 유지). Vercel 프로젝트 2주 보존.
+- [x] 새 주소에서: 홈·매물·사례·지도·문의 접수·메일/카카오 알림·관리자 로그인·사진 등록·sitemap/robots·카톡 미리보기.
+- [x] Vercel Routes로 옛 주소 → 새 주소 301(경로·쿼리 유지). Vercel 프로젝트 2주 보존.
 - 되돌리기: Vercel 넘기기 끄기 (DB가 같아서 자료 손실 없음).
+- **4단계 완료 (2026-11-22)**: Vercel 프로젝트 `linerealestate` Routes에 `^/(.*)$` → `https://sanbon.lineestate.co.kr/$1` **308** 한 줄(route id 1f9b7dfc…, version 6cbee716…, 코드 배포 없음). 308은 301과 같은 영구 이동이고 POST를 GET으로 바꾸지 않음. 경로·쿼리 유지 확인. GitHub 저장소 변수 `NEXT_PUBLIC_SITE_URL` 설정 → Pages 이동 페이지가 새 주소로. 카카오 기본 웹 도메인을 새 주소로. push → Coolify 웹훅 자동 배포 확인(2분 12초). `check:site --stage all` 21/21.
+  - 되돌리기: Vercel MCP `update_route_versions` restore(이전 버전) 또는 Vercel 화면 Routes에서 이 줄 끄기. Vercel 프로젝트는 2주(~12-06) 지우지 않음.
 
 ### 5단계 — 검색 등록
 1. 구글: lineestate.co.kr 도메인 속성에 자동 포함 → sitemap 제출, 색인 요청.
