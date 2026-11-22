@@ -90,9 +90,12 @@
   - 남은 정리: Coolify가 자동으로 붙인 `www.sanbon.lineestate.co.kr`(DNS 없음, 화면에서 삭제 안 됨)와 임시 `…sslip.io` 주소는 전환 뒤 지우기.
 
 ### 3단계 — 외부 서비스에 새 주소 **추가** (지우지 않음)
-- [ ] Supabase Redirect URLs에 `https://sanbon.lineestate.co.kr/admin/**` 추가. **Site URL은 경매 것이라 바꾸지 않음.** (관리자 설정 메일은 접속한 주소로 돌아오게 돼 있어 코드 수정은 필요 없음)
-- [ ] 카카오 개발자: 사이트 도메인에 새 주소, Redirect URI `https://sanbon.lineestate.co.kr/api/inquiries/kakao/callback` 추가. 옛 주소는 남겨 둠.
-- [ ] 네이버 지도 Web 서비스 URL에 새 주소 추가.
+- [x] Supabase Redirect URLs에 `https://sanbon.lineestate.co.kr/admin/**` 추가. **Site URL은 경매 것이라 바꾸지 않음.** (관리자 설정 메일은 접속한 주소로 돌아오게 돼 있어 코드 수정은 필요 없음)
+- [x] 카카오 개발자: 사이트 도메인에 새 주소, Redirect URI `https://sanbon.lineestate.co.kr/api/inquiries/kakao/callback` 추가. 옛 주소는 남겨 둠.
+- [x] 네이버 지도 Web 서비스 URL에 새 주소 추가.
+- **3단계 (2026-11-22)**: Supabase Redirect URLs 7개(새 `https://sanbon.lineestate.co.kr/admin/**` 추가, Site URL·기존 6개 그대로) / 카카오 앱 `선아파트`(ID 1604069) REST 키 로그인 리다이렉트 URI에 새 콜백 추가(3개), 제품 링크 관리 웹 도메인에 새 주소 추가(기본은 옛 주소 그대로) / 네이버 지도 앱 `lineauction`(Client ID eba3h7218n) Web 서비스 URL에 새 주소 추가(8/10). 새 주소 매물 상세 지도·핀 표시 확인, 콘솔 오류 없음.
+  - `scripts/inquiry-sheets.gs` 주소를 새 주소로 바꿈. **사용자 Apps Script(`linerealestate 문의 자동 기록`)의 같은 줄도 4단계(301) 전에 바꿔야 함.** 새 주소 `/api/inquiries/sheets` 토큰 없이 401 확인.
+  - 남은 손 확인(사용자): 새 주소 관리자 로그인, 문의함 '알림 테스트 보내기' → 카카오·메일 수신, 카카오 메시지 링크가 새 주소로 열리는지.
 
 ### 4단계 — 시험 → 전환
 - [ ] 새 주소에서: 홈·매물·사례·지도·문의 접수·메일/카카오 알림·관리자 로그인·사진 등록·sitemap/robots·카톡 미리보기.

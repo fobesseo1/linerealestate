@@ -18,7 +18,7 @@ function syncInquiries() {
     const ids = new Set(sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues().flat().map(String) : []);
     let cursor = JSON.parse(props.getProperty('cursor') || 'null');
     for (let page = 0; page < 5; page++) {
-      let url = 'https://linerealestate.vercel.app/api/inquiries/sheets';
+      let url = 'https://sanbon.lineestate.co.kr/api/inquiries/sheets';
       if (cursor) url += '?after=' + encodeURIComponent(cursor.created_at) + '&id=' + encodeURIComponent(cursor.id);
       const response = UrlFetchApp.fetch(url, {headers:{Authorization:'Bearer ' + INQUIRY_SYNC_TOKEN},muteHttpExceptions:true});
       if (response.getResponseCode() !== 200) throw new Error('문의 기록 연결 실패: ' + response.getResponseCode());
