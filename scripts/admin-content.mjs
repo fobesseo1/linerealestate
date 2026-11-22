@@ -4,6 +4,7 @@ import {resolve,join} from 'node:path';
 import {createClient} from '@supabase/supabase-js';
 import {webpPhotoBuffer} from '../lib/content/photo-node.mjs';
 import {cleanContent} from '../lib/content/types.ts';
+import {INDEXNOW_KEY,indexNowBody} from '../lib/seo.ts';
 import {mapAddress,matchCoordinates} from '../lib/maps/address.mjs';
 process.loadEnvFile('.env.local');
 const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -65,4 +66,7 @@ if(command==='export'){
   photos.push({path,label:p.label,url:db.storage.from('lineestate-public').getPublicUrl(path).data.publicUrl});
  }
  check(await db.rpc('lineestate_approve',{revision:revision.id,public_photos:photos}));console.log(`Approved revision published: ${draft.number}`);
+ // Tell Bing·Naver·Daum right away (IndexNow). A failure here never undoes the publish.
+ const site='https://sanbon.lineestate.co.kr',paths=['/','/listings','/works',`/${revision.candidate.kind==='work'?'works':'property'}/${draft.number}`];
+ try{const r=await fetch('https://api.indexnow.org/indexnow',{method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},body:JSON.stringify(indexNowBody(site,INDEXNOW_KEY,paths)),signal:AbortSignal.timeout(8000)});console.log(`IndexNow: ${r.status}`);}catch{console.log('IndexNow: not sent');}
 }else throw Error('Usage: export SUN-1001 | revise SUN-1001 file.json | publish revision-id --human-approved');

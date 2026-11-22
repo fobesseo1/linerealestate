@@ -105,8 +105,28 @@ async function search(){
  const home=await text('/').catch(()=>'');
  const tags={google:'google-site-verification',naver:'naver-site-verification',bing:'msvalidate.01'};
  for(const [k,name] of Object.entries(tags))if(expect.has(k))await check(`소유확인 태그 ${name}`,async()=>{must(home.includes(`name="${name}"`),'없음');});
- if(indexNowKey)await check('IndexNow 키 파일',async()=>{must((await text(`/${indexNowKey}.txt`)).trim()===indexNowKey,'내용이 키와 다름');});
  await check('홈 설명이 상가 사이트',async()=>{must(/상가/.test(home.match(/name="description" content="([^"]*)"/)?.[1]||''),'description에 상가 없음');});
+ await check('홈 제목에 산본중심상가',async()=>{must(/<title>[^<]*산본중심상가[^<]*<\/title>/.test(home),'제목에 산본중심상가 없음');});
+ await check('RSS /rss.xml: 새 매물 목록, 이 주소 링크',async()=>{
+  const r=await get('/rss.xml');must(r.status===200,`→ ${r.status}`);must(/rss\+xml/.test(r.headers.get('content-type')||''),'content-type이 rss가 아님');
+  const body=await r.text();const links=[...body.matchAll(/<link>([^<]+)<\/link>/g)].map(m=>m[1]).slice(1);
+  must(links.length>5,`항목 ${links.length}개뿐`);must(links.every(l=>l.startsWith(`${site}/`)),'다른 주소 링크 있음');return `${links.length}개`;
+ });
+ await check('매물 상세: 구조화 데이터(RealEstateListing·경로)와 사진 설명',async()=>{
+  const list=await (await get('/api/content/publications')).json();const it=list.find(i=>i.content?.kind!=='work');must(it,'매물 없음');
+  const body=await text(`/property/${it.number}`);
+  const blocks=[...body.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1])).flat();
+  const types=blocks.map(b=>b['@type']);must(types.includes('RealEstateListing')&&types.includes('BreadcrumbList'),`구조화 데이터: ${types.join(',')}`);
+  const listing=blocks.find(b=>b['@type']==='RealEstateListing');must(listing.url===`${site}/property/${it.number}`,`url ${listing.url}`);
+  const alts=[...body.matchAll(/<img[^>]*alt="([^"]*)"/g)].map(m=>m[1]);must(!alts.some(a=>/\.(webp|jpe?g|png)$/i.test(a)),'파일 이름 alt가 남아 있음');
+  return `${it.number}`;
+ });
+ await check('매물 목록 2쪽이 링크로 열림',async()=>{
+  const first=await text('/listings');must(/href="\/listings\?page=2"/.test(first),'2쪽 링크 없음');
+  const second=await text('/listings?page=2');must((second.match(/href="\/property\/SUN-\d+"/g)||[]).length>0,'2쪽에 매물 링크 없음');
+ });
+ const key=indexNowKey||'01de395389bd8779a541f57f113486c9';
+ await check('IndexNow 키 파일',async()=>{must((await text(`/${key}.txt`)).trim()===key,'내용이 키와 다름');});
 }
 
 const run=stage==='all'?STAGES:[stage];

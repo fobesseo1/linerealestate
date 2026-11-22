@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from "react";
 import type {Photo} from "@/lib/content/types";
 import {cn} from "@/lib/utils";
+import {photoAlt} from "@/lib/seo";
 
 /** Photo viewer: arrow buttons, ←/→ keys, touch swipe; the selected thumbnail scrolls into view. */
 export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
@@ -27,13 +28,13 @@ export function PropertyGallery({photos,title}:{photos:Photo[];title:string}){
    onPointerDown={event=>{if(event.pointerType==="touch")start.current={x:event.clientX,y:event.clientY};}}
    onPointerUp={event=>{const origin=start.current;start.current=null;if(!origin||!multiple)return;const dx=event.clientX-origin.x,dy=event.clientY-origin.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)move(dx<0?1:-1);}}
    onPointerCancel={()=>{start.current=null;}}>
-   <img key={photos[index].path} src={photos[index].url} alt={photos[index].label||title} draggable={false} className="size-full animate-photo-reveal bg-[#f5f3f0] object-contain"/>
+   <img key={photos[index].path} src={photos[index].url} alt={photoAlt(photos[index].label,title,index)} draggable={false} className="size-full animate-photo-reveal bg-[#f5f3f0] object-contain"/>
    {multiple&&<><Arrow direction="previous" onClick={()=>move(-1)}/><Arrow direction="next" onClick={()=>move(1)}/></>}
    <span aria-live="polite" aria-atomic="true" className="absolute bottom-3 right-3 rounded-sm bg-black/70 px-2 py-1 text-micro text-white">{index+1} / {photos.length}</span>
   </div>
   <div ref={strip} className="relative my-3 flex max-w-full gap-3 overflow-x-auto">
    {photos.map((photo,i)=><button type="button" key={photo.path} aria-label={`사진 ${i+1} 보기`} aria-pressed={index===i} onClick={()=>setIndex(i)} className="h-18 w-25 shrink-0 overflow-hidden border max-md:h-14 max-md:w-19 border-[#ddd] aria-pressed:border-3 aria-pressed:border-brand">
-    <img src={photo.url} alt={photo.label||`사진 ${i+1}`} loading="lazy" className="size-full object-cover"/>
+    <img src={photo.url} alt={photoAlt(photo.label,title,i)} loading="lazy" className="size-full object-cover"/>
    </button>)}
   </div>
  </section>;

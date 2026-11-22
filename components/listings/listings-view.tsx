@@ -75,7 +75,7 @@ export function ListingsView({initial,filters:start}:{initial:Publication[]|null
    <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-md:gap-3">
     {shown.slice((page-1)*perPage,page*perPage).map(item=><CompactListingCard key={item.id} item={item} saved={favorites.includes(item.number)} onFavorite={toggleFavorite}/>)}
    </div>
-   {pages>1&&<Pagination page={page} pages={pages} onPage={next=>{setFiltersState({...filters,page:next});top.current?.scrollIntoView({behavior:"smooth"});}}/>}
+   {pages>1&&<Pagination page={page} pages={pages} href={n=>`/listings${toQuery({...filters,page:n})}`} onPage={next=>{setFiltersState({...filters,page:next});top.current?.scrollIntoView({behavior:"smooth"});}}/>}
   </section>
    :<EmptyState>{failed?"자료를 불러오지 못했습니다. 새로고침해 주세요.":"조건에 맞는 공개 매물이 없습니다. 조건을 넓혀 살펴보세요."}</EmptyState>}
  </>;
@@ -103,11 +103,12 @@ function Toggle({pressed,onClick,children}:{pressed:boolean;onClick:()=>void;chi
  return <Button variant="outline" aria-pressed={pressed} onClick={onClick} className="h-11 rounded-sm bg-white px-4 text-body text-gray-900 hover:bg-gray-50 aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-white">{children}</Button>;
 }
 
-function Pagination({page,pages,onPage}:{page:number;pages:number;onPage:(page:number)=>void}){
+// Page numbers are real links (/listings?page=2) so search engines can reach every listing; clicks stay in-page.
+function Pagination({page,pages,href,onPage}:{page:number;pages:number;href:(page:number)=>string;onPage:(page:number)=>void}){
  const item="grid size-10 place-items-center border border-gray-300 bg-white text-sm disabled:opacity-35";
  return <nav aria-label="매물 페이지" className="mt-10 flex items-center justify-center gap-2">
   <button className={item} disabled={page===1} onClick={()=>onPage(page-1)} aria-label="이전 페이지"><ChevronLeft size={16}/></button>
-  {Array.from({length:pages},(_,i)=>i+1).map(n=><button key={n} onClick={()=>onPage(n)} aria-current={n===page?"page":undefined} className={cn(item,n===page&&"border-ink bg-ink font-bold text-white")}>{n}</button>)}
+  {Array.from({length:pages},(_,i)=>i+1).map(n=><a key={n} href={href(n)} onClick={event=>{event.preventDefault();onPage(n);}} aria-current={n===page?"page":undefined} className={cn(item,n===page&&"border-ink bg-ink font-bold text-white")}>{n}</a>)}
   <button className={item} disabled={page===pages} onClick={()=>onPage(page+1)} aria-label="다음 페이지"><ChevronRight size={16}/></button>
  </nav>;
 }

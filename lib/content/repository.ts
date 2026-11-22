@@ -44,7 +44,15 @@ export async function approveRevision(revision:Revision){
    published.push({path,label:photo.label,url:db().storage.from(publicBucket).getPublicUrl(path).data.publicUrl});
  }
  const {error}=await db().rpc("lineestate_approve",{revision:revision.id,public_photos:published});if(error)throw Error(`게시하지 못했습니다: ${error.message}`);
+ void notifySearchEngines();
  window.dispatchEvent(new Event("lineestate-published"));
  try{localStorage.setItem("lineestate-publication-updated",String(Date.now()));}catch{}
 }
-export async function setPublicationStatus(id:string,status:string){const {data,error}=await db().from("lineestate_published").update({status}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw Error("아직 게시되지 않은 초안입니다. 게시 후 상태를 변경할 수 있습니다.");}
+export async function setPublicationStatus(id:string,status:string){const {data,error}=await db().from("lineestate_published").update({status}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw Error("아직 게시되지 않은 초안입니다. 게시 후 상태를 변경할 수 있습니다.");void notifySearchEngines([id]);}
+/** Tell Bing·Naver·Daum about the changed page (IndexNow). Never blocks or fails the admin action. */
+async function notifySearchEngines(ids?:string[]){
+ try{
+  const {data}=await db().auth.getSession();if(!data.session)return;
+  await fetch("/api/content/indexnow",{method:"POST",headers:{Authorization:`Bearer ${data.session.access_token}`,"Content-Type":"application/json"},body:JSON.stringify(ids?{ids}:{}),signal:AbortSignal.timeout(10000)});
+ }catch{}
+}
