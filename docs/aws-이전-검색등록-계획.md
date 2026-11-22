@@ -75,15 +75,19 @@
 - [ ] 푸시 뒤 Vercel 배포가 계속 정상인지 `npm run check:site -- --stage all`.
 
 ### 2단계 — 서버·도메인 (사용자와 함께)
-- [ ] Coolify 새 앱 `sanbon`(GitHub `fobesseo1/linerealestate` main). 빌드: `npm ci && npx next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/`, 실행: `node .next/standalone/server.js`(`PORT`, `HOSTNAME=0.0.0.0`).
-- [ ] 환경변수(코드에서 실제로 읽는 것 전부, 확인함) — sanbon 앱 칸에만, 값은 사용자가 Vercel에서 직접 복사:
+- [x] Coolify 새 앱 `sanbon`(GitHub `fobesseo1/linerealestate` main). 빌드: `npm ci && npx next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/`, 실행: `node .next/standalone/server.js`(`PORT`, `HOSTNAME=0.0.0.0`).
+- [x] 환경변수(코드에서 실제로 읽는 것 전부, 확인함) — sanbon 앱 칸에만, 값은 사용자가 Vercel에서 직접 복사:
   - `SUPABASE_SECRET_KEY` — 문의 저장·관리자 확인. **알림 설정(지메일 앱 비밀번호·카카오 키·네이버 지도 비밀키)이 이 값으로 암호화돼 DB에 있으므로 반드시 Vercel과 같은 값.**
   - `SUPABASE_GATE_TOKEN` — 공개 키로 DB 읽을 때 붙이는 문 암호(DB 쪽 검사는 lineestate 마이그레이션 `ls_gate`).
   - `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID`, `SBIZ365_SIMPLE_KEY`, 새로 `NEXT_PUBLIC_SITE_URL`. `NEXT_PUBLIC_*`는 "빌드 때도 쓰기" 체크.
   - Supabase 주소·공개 키는 환경변수가 아니라 코드 안 `lib/content/public-config.json`에 있어 따로 넣을 것 없음.
   - `.env.local`의 경매용 키(ONBID·MOLIT·텔레그램·CRON 등)는 선부동산 코드가 안 쓰므로 넣지 않음.
-- [ ] 첫 빌드는 lineestate 빌드와 겹치지 않게.
-- [ ] Cloudflare DNS `sanbon` A → 서버 IP(회색). 인증서는 Coolify 자동.
+- [x] 첫 빌드는 lineestate 빌드와 겹치지 않게.
+- [x] Cloudflare DNS `sanbon` A → 서버 IP(회색). 인증서는 Coolify 자동.
+- **2단계 완료 (2026-11-22)**: Coolify 프로젝트 `sanbon` / 앱 `linerealestate:main-c0g3x9oqfblryyyyasodw1li`(Railpack, `npm ci`, standalone 빌드, 포트 3000). GitHub 앱 `lineestate-coolify-seoul`에 저장소 추가 → main 푸시 자동 배포. 환경변수 5개(공개 2 + 비밀 3, 비밀은 사용자가 `.env.local` 값으로 입력). Cloudflare `sanbon` A 43.202.20.134 DNS only. Let's Encrypt 인증서(~2027-02-20), http→https. 첫 빌드 약 18분.
+  - 시험: `check:site --base https://sanbon.lineestate.co.kr` server 12/12, services 2/2, search 3/3. lineestate.co.kr 영향 없음(200).
+  - 속도(중간값, 한국 PC): 매물 목록 0.98초(Vercel 워싱턴) → 0.21초, 공개 매물 API 0.19 → 0.17초, 홈 0.33 → 0.31초.
+  - 남은 정리: Coolify가 자동으로 붙인 `www.sanbon.lineestate.co.kr`(DNS 없음, 화면에서 삭제 안 됨)와 임시 `…sslip.io` 주소는 전환 뒤 지우기.
 
 ### 3단계 — 외부 서비스에 새 주소 **추가** (지우지 않음)
 - [ ] Supabase Redirect URLs에 `https://sanbon.lineestate.co.kr/admin/**` 추가. **Site URL은 경매 것이라 바꾸지 않음.** (관리자 설정 메일은 접속한 주소로 돌아오게 돼 있어 코드 수정은 필요 없음)
