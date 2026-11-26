@@ -27,12 +27,11 @@ export const site = {
   office: "031-344-8924",
   officeHref: "tel:0313448924",
   email: "ysyh1730@naver.com",
-  /** Provisional hours confirmed by the owner on 2026-11-05. */
+  /** Open every day, 24 hours (owner decision 2026-11-26). schema.org writes 24h as 00:00–23:59. */
   hours: [
-    {days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], label: "평일", opens: "09:30", closes: "18:30"},
-    {days: ["Saturday"], label: "토", opens: "10:00", closes: "15:00"},
+    {days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], label: "매일", opens: "00:00", closes: "23:59"},
   ],
-  hoursText: "평일 09:30–18:30 · 토 10:00–15:00 · 일·공휴일 휴무",
+  hoursText: "연중무휴 24시간",
 } as const;
 
 /** schema.org RealEstateAgent for local search. Rendered once in the public layout. */

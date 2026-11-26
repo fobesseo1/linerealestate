@@ -10,3 +10,4 @@
 /* Admin keeps its neutral theme: shadcn components read these instead of the public A-1 brand values. */
 .admin-shell{--background:#fff;--primary:#222;--primary-hover:rgb(34 34 34/.85);--muted:#f7f7f7;--input:#ddd;--border:#ddd}
 .admin-contact-phone{display:block;font-size:23px;font-weight:700;letter-spacing:-.03em;margin:20px 0 10px}
+.admin-deal-status{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:4px solid #e00b41}.admin-deal-status h2{margin-bottom:6px}.admin-deal-status p{font-size:12px;color:#777;line-height:1.8}.admin-deal-toggle{display:flex;border:2px solid #19191f}.admin-deal-toggle button{padding:12px 26px;font-size:15px;color:#777;background:#fff}.admin-deal-toggle button[aria-pressed=true]{background:#e00b41;color:#fff;font-weight:800}.admin-deal-toggle button:disabled{cursor:not-allowed}.admin-deal-toggle button:disabled:not([aria-pressed=true]){opacity:.5}

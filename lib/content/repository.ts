@@ -48,6 +48,8 @@ export async function approveRevision(revision:Revision){
  window.dispatchEvent(new Event("lineestate-published"));
  try{localStorage.setItem("lineestate-publication-updated",String(Date.now()));}catch{}
 }
+/** Public status of a draft's published copy, or null while it was never published. */
+export async function loadPublicationStatus(id:string):Promise<string|null>{const {data,error}=await db().from("lineestate_published").select("status").eq("id",id).maybeSingle();if(error)throw error;return data?.status??null;}
 export async function setPublicationStatus(id:string,status:string){const {data,error}=await db().from("lineestate_published").update({status}).eq("id",id).select("id").maybeSingle();if(error)throw error;if(!data)throw Error("아직 게시되지 않은 초안입니다. 게시 후 상태를 변경할 수 있습니다.");void notifySearchEngines([id]);}
 /** Tell Bing·Naver·Daum about the changed page (IndexNow). Never blocks or fails the admin action. */
 async function notifySearchEngines(ids?:string[]){

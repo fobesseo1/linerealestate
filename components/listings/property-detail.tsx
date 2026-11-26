@@ -11,7 +11,7 @@ import {kindLabel,type Publication} from "@/lib/content/types";
 import {dealForm,floorLabel,floorsLabel,objectType,placeLabel,price,pyeong} from "@/lib/content/format";
 import {site} from "@/lib/site";
 import {PropertyGallery} from "./property-gallery";
-import {PhotoPlaceholder} from "./listing-card";
+import {PhotoPlaceholder,isContracted} from "./listing-card";
 import {NaverMap} from "./naver-map";
 
 /** Listing or completed-case page. Facts come straight from the published record; blanks read 미확인. */
@@ -20,7 +20,7 @@ export function PropertyDetail({item}:{item:Publication}){
  const inquiry:InquiryContext={kind:work?"work":"listing",title:c.title,reference:item.number,goal:c.kind==="sale"?"상가 매수 검토":work?"중개 사례 관련 상담":"상가 임대차 후보 비교"};
  usePageInquiry(inquiry);
  const [inquiryOpen,setInquiryOpen]=useState(false);
- const status=work?"실제 중개 완료 사례 · 현재 모집 아님":item.status==="completed"?"거래 완료":kindLabel[c.kind];
+ const status=work?"실제 중개 완료 사례 · 현재 모집 아님":item.status==="completed"?"계약완료":kindLabel[c.kind];
  // Every item the 고시 「중개대상물의 표시·광고 명시사항 세부기준」 제6조 asks of an internet listing ad, in its order. Blanks read 미확인, except 화장실 수, which is left out until entered (owner decision 2026-11-05).
  const facts:[string,string][]=[
   ["거래 형태",dealForm(c)],
@@ -40,6 +40,10 @@ export function PropertyDetail({item}:{item:Publication}){
     <h1 className="mb-3 text-[clamp(28px,3.1vw,44px)] font-heavy leading-[1.3] tracking-[-0.045em]">{c.title}</h1>
     <p className="flex items-center gap-1 text-sm text-gray-600">{[placeLabel(c),floorLabel(c)].filter(Boolean).join(" · ")}</p>
    </div>
+   {isContracted(item)&&<div aria-label="계약완료" role="img" className="mr-4 shrink-0 -rotate-8 border-5 border-white bg-brand px-6 py-3 text-center text-white outline-3 outline-brand max-md:mr-1 max-md:mt-2 max-md:border-3 max-md:px-3 max-md:py-2 max-md:outline-2">
+    <div className="text-xs font-bold tracking-eyebrow max-md:text-micro">CONTRACTED</div>
+    <div className="text-[34px] font-heavy leading-[1.1] max-md:text-xl">계약완료</div>
+   </div>}
   </div>
   {/* Two columns only from 1024px; tablets stack the photos above the contact card. */}
   <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-10 max-lg:grid-cols-1 max-lg:gap-0">
@@ -56,7 +60,7 @@ export function PropertyDetail({item}:{item:Publication}){
     </Section>
     {story.map(([heading,body])=>body&&<Section key={heading} title={heading}><Prose>{body}</Prose></Section>)}
     {c.facilities.length>0&&<Section title="확인된 시설"><div className="flex flex-wrap gap-1">{c.facilities.map(f=><Badge key={f} variant="tag">{f}</Badge>)}</div></Section>}
-    {c.showMap&&c.address&&<NaverMap address={c.address} title={c.title} caption={work?"실제 중개 완료 사례":item.status==="completed"?"거래 완료":kindLabel[c.kind]} positionOverride={c.latitude&&c.longitude?{latitude:c.latitude,longitude:c.longitude}:undefined}/>}
+    {c.showMap&&c.address&&<NaverMap address={c.address} title={c.title} caption={work?"실제 중개 완료 사례":item.status==="completed"?"계약완료":kindLabel[c.kind]} positionOverride={c.latitude&&c.longitude?{latitude:c.latitude,longitude:c.longitude}:undefined}/>}
     <Link href={work?"/works":"/listings"} className="mt-7 inline-flex items-center gap-2 py-5 text-xs font-bold text-brand"><ArrowLeft size={16}/>목록으로</Link>
    </div>
    <aside className="sticky top-21 mt-8 max-h-[calc(100dvh-100px)] min-w-0 self-start overflow-y-auto overscroll-contain [scrollbar-width:thin] max-lg:static max-lg:mt-0 max-lg:grid max-lg:max-h-none max-lg:grid-cols-2 max-lg:gap-3 max-lg:overflow-visible max-lg:pt-8 max-md:grid-cols-1">
